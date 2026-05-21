@@ -1,0 +1,6 @@
+{
+  "name": "Find Coach",
+  "description": "Cricket coaching, find nearby players, group practice sessions, CricTok short clips, and AI learning assistant.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
