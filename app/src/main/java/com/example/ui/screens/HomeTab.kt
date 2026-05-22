@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -200,83 +202,169 @@ fun HomeTab(
 
                     Spacer(modifier = Modifier.height(18.dp))
 
-                    // Search input matching refernce: "What skill do you want to learn?"
-                    OutlinedTextField(
-                        value = searchQuery,
-                        onValueChange = { viewModel.searchCoaches(it) },
-                        placeholder = {
-                            Text(
-                                text = if (appMode == AppMode.LEARNING) "What skill do you want to learn?" else "Search players or matches near by...",
-                                color = Color.White.copy(alpha = 0.5f),
-                                fontSize = 13.sp
-                            )
-                        },
+                    // Search input matching mockup: Pill shape, gradient border, custom search icon with AI sparkle star
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clip(RoundedCornerShape(30.dp)),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedContainerColor = Color.Transparent,
-                            unfocusedContainerColor = Color.Transparent,
-                            focusedBorderColor = SportColors.GlowBlueAccent,
-                            unfocusedBorderColor = Color.White.copy(alpha = 0.3f),
-                            focusedTextColor = Color.White,
-                            unfocusedTextColor = Color.White,
-                        ),
-                        singleLine = true,
-                        trailingIcon = {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = Color.White.copy(alpha = 0.7f)
+                            .clip(CircleShape)
+                            .background(Color(0xFF0F1E4C).copy(alpha = 0.25f))
+                            .border(
+                                width = 1.6.dp,
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color(0xFFE2E8F0).copy(alpha = 0.9f),
+                                        SportColors.GlowBlueAccent
+                                    )
+                                ),
+                                shape = CircleShape
                             )
-                        }
-                    )
+                    ) {
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { viewModel.searchCoaches(it) },
+                            placeholder = {
+                                Text(
+                                    text = if (appMode == AppMode.LEARNING) "What skill do you want to learn?" else "Search players or matches near by...",
+                                    color = Color.White.copy(alpha = 0.45f),
+                                    fontSize = 13.sp
+                                )
+                            },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("search_field_input"),
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedContainerColor = Color.Transparent,
+                                unfocusedContainerColor = Color.Transparent,
+                                focusedBorderColor = Color.Transparent,
+                                unfocusedBorderColor = Color.Transparent,
+                                errorBorderColor = Color.Transparent,
+                                disabledBorderColor = Color.Transparent,
+                                focusedTextColor = Color.White,
+                                unfocusedTextColor = Color.White,
+                            ),
+                            singleLine = true,
+                            trailingIcon = {
+                                CustomSearchIcon(
+                                    tint = Color.White,
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .offset(x = (-4).dp)
+                                )
+                            }
+                        )
+                    }
 
                     Spacer(modifier = Modifier.height(18.dp))
 
-                    // Trending Skills Chips: Bat swing, Footwork, Bat control
+                    // 13 Important Batting & Bowling Skill Chips
                     val chips = listOf(
-                        "Bat swing" to "🏏",
-                        "Footwork" to "👟",
-                        "Bat control" to "🥢"
+                        "Bat swing",
+                        "Footwork",
+                        "Bat control",
+                        "Cover drive",
+                        "Pull shot",
+                        "Straight drive",
+                        "Out-swing",
+                        "In-swing",
+                        "Off-spin",
+                        "Leg-spin",
+                        "Yorker",
+                        "Bouncer",
+                        "Power hitting"
                     )
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        chips.forEach { (skill, emoji) ->
-                            val isSelected = selectedSkillChip == skill
+                    val chipsScrollState = rememberScrollState()
+
+                    Column(modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .horizontalScroll(chipsScrollState)
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            chips.forEach { skill ->
+                                val isSelected = selectedSkillChip == skill
+                                Box(
+                                    modifier = Modifier
+                                        .clip(RoundedCornerShape(14.dp))
+                                        .background(
+                                            if (isSelected) {
+                                                Color(0xFF2D46CD).copy(alpha = 0.85f)
+                                            } else {
+                                                Color(0xFF0F1E4C).copy(alpha = 0.45f)
+                                            }
+                                        )
+                                        .border(
+                                            width = 1.dp,
+                                            color = if (isSelected) {
+                                                Color(0xFF818CF8)
+                                            } else {
+                                                Color(0xFFE2E8F0).copy(alpha = 0.15f)
+                                            },
+                                            shape = RoundedCornerShape(14.dp)
+                                        )
+                                        .clickable { viewModel.selectSkillChip(skill) }
+                                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        SkillChipIcon(
+                                            skill = skill,
+                                            modifier = Modifier.size(18.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = skill,
+                                            color = Color.White,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Medium
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Custom hardware-accelerated horizontal scrollbar tracker
+                        val density = androidx.compose.ui.platform.LocalDensity.current
+                        val maxScroll = chipsScrollState.maxValue
+                        val currentScroll = chipsScrollState.value
+                        val handleWidth = 24.dp
+                        val trackWidth = 72.dp
+                        val availableSpacePx = with(density) { (trackWidth - handleWidth).toPx() }
+
+                        if (maxScroll > 0) {
                             Box(
                                 modifier = Modifier
-                                    .weight(1f)
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .background(
-                                        if (isSelected) SportColors.ActiveBlue else SportColors.SoftCardBg.copy(
-                                            alpha = 0.6f
-                                        )
-                                    )
-                                    .border(
-                                        width = 1.dp,
-                                        color = if (isSelected) SportColors.GlowBlueAccent else Color.White.copy(
-                                            alpha = 0.1f
-                                        ),
-                                        shape = RoundedCornerShape(12.dp)
-                                    )
-                                    .clickable { viewModel.selectSkillChip(skill) }
-                                    .padding(vertical = 10.dp),
-                                contentAlignment = Alignment.Center
+                                    .width(trackWidth)
+                                    .height(3.dp)
+                                    .align(Alignment.CenterHorizontally)
+                                    .clip(CircleShape)
+                                    .background(Color.White.copy(alpha = 0.12f))
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Text(text = emoji, fontSize = 12.sp)
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Text(
-                                        text = skill,
-                                        color = Color.White,
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                }
+                                val progress = currentScroll.toFloat() / maxScroll
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .width(handleWidth)
+                                        .graphicsLayer {
+                                            translationX = progress * availableSpacePx
+                                        }
+                                        .clip(CircleShape)
+                                        .background(
+                                            Brush.horizontalGradient(
+                                                colors = listOf(
+                                                    SportColors.GlowBlueAccent,
+                                                    Color(0xFF818CF8)
+                                                )
+                                            )
+                                        )
+                                )
                             }
                         }
                     }
@@ -889,3 +977,314 @@ fun HomeTab(
         }
     }
 }
+
+@Composable
+fun CustomSearchIcon(modifier: Modifier = Modifier, tint: Color = Color.White) {
+    androidx.compose.foundation.Canvas(modifier = modifier) {
+        val w = size.width
+        val h = size.height
+        val strokeWidth = 2.dp.toPx()
+
+        // Scaled coordinates based on standard 24x24 design
+        val scaleX = w / 24f
+        val scaleY = h / 24f
+
+        val cx = 10f * scaleX
+        val cy = 10f * scaleY
+        val r = 5.5f * scaleX
+
+        // 1. Draw Ring (Lens)
+        drawCircle(
+            color = tint,
+            radius = r,
+            center = androidx.compose.ui.geometry.Offset(cx, cy),
+            style = androidx.compose.ui.graphics.drawscope.Stroke(
+                width = strokeWidth
+            )
+        )
+
+        // 2. Draw Handle
+        val handleStart = androidx.compose.ui.geometry.Offset(
+            cx + r * 0.707f,
+            cy + r * 0.707f
+        )
+        val handleEnd = androidx.compose.ui.geometry.Offset(
+            20f * scaleX,
+            20f * scaleY
+        )
+        drawLine(
+            color = tint,
+            start = handleStart,
+            end = handleEnd,
+            strokeWidth = strokeWidth * 1.1f,
+            cap = androidx.compose.ui.graphics.StrokeCap.Round
+        )
+
+        // 3. Draw Overlapping 4-point Sparkle Star
+        val starX = 17.5f * scaleX
+        val starY = 6.5f * scaleY
+        val starHalf = 4.5f * scaleX
+
+        val starPath = androidx.compose.ui.graphics.Path().apply {
+            moveTo(starX, starY - starHalf)
+            quadraticTo(starX, starY, starX + starHalf, starY)
+            quadraticTo(starX, starY, starX, starY + starHalf)
+            quadraticTo(starX, starY, starX - starHalf, starY)
+            quadraticTo(starX, starY, starX, starY - starHalf)
+            close()
+        }
+        drawPath(starPath, color = tint)
+    }
+}
+
+@Composable
+fun SkillChipIcon(skill: String, modifier: Modifier = Modifier) {
+    androidx.compose.foundation.Canvas(modifier = modifier) {
+        val w = size.width
+        val h = size.height
+
+        when (skill) {
+            "Bat swing" -> {
+                rotate(-45f, pivot = androidx.compose.ui.geometry.Offset(w/2f, h/2f)) {
+                    // Wooden bat body centered
+                    drawRoundRect(
+                        color = Color(0xFFCBB093), // Tan wood
+                        topLeft = androidx.compose.ui.geometry.Offset(w * 0.38f, h * 0.4f),
+                        size = androidx.compose.ui.geometry.Size(w * 0.24f, h * 0.55f),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(2.dp.toPx(), 2.dp.toPx())
+                    )
+                    // Red handle grip
+                    drawRoundRect(
+                        color = Color(0xFFEF4444), // Red grip
+                        topLeft = androidx.compose.ui.geometry.Offset(w * 0.44f, h * 0.05f),
+                        size = androidx.compose.ui.geometry.Size(w * 0.12f, h * 0.38f),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(1.dp.toPx(), 1.dp.toPx())
+                    )
+                    // Separator ring
+                    drawRect(
+                        color = Color(0xFF1E293B),
+                        topLeft = androidx.compose.ui.geometry.Offset(w * 0.42f, h * 0.4f),
+                        size = androidx.compose.ui.geometry.Size(w * 0.16f, h * 0.04f)
+                    )
+                }
+            }
+            "Footwork" -> {
+                val path = androidx.compose.ui.graphics.Path().apply {
+                     moveTo(w * 0.82f, h * 0.32f)
+                     quadraticTo(w * 0.88f, h * 0.55f, w * 0.82f, h * 0.75f)
+                     lineTo(w * 0.22f, h * 0.75f)
+                     quadraticTo(w * 0.12f, h * 0.72f, w * 0.15f, h * 0.58f)
+                     lineTo(w * 0.35f, h * 0.48f)
+                     lineTo(w * 0.52f, h * 0.35f)
+                     lineTo(w * 0.72f, h * 0.30f)
+                     close()
+                }
+                drawPath(path, color = Color(0xFF3B82F6)) // Royal Blue main
+                
+                val solePath = androidx.compose.ui.graphics.Path().apply {
+                     moveTo(w * 0.15f, h * 0.73f)
+                     lineTo(w * 0.85f, h * 0.73f)
+                     lineTo(w * 0.82f, h * 0.82f)
+                     lineTo(w * 0.18f, h * 0.82f)
+                     close()
+                }
+                drawPath(solePath, color = Color.White)
+                
+                val stripeWidth = 1.2.dp.toPx()
+                drawLine(
+                    color = Color(0xFF93C5FD),
+                    start = androidx.compose.ui.geometry.Offset(w * 0.55f, h * 0.45f),
+                    end = androidx.compose.ui.geometry.Offset(w * 0.45f, h * 0.65f),
+                    strokeWidth = stripeWidth
+                )
+                drawLine(
+                    color = Color(0xFF93C5FD),
+                    start = androidx.compose.ui.geometry.Offset(w * 0.61f, h * 0.43f),
+                    end = androidx.compose.ui.geometry.Offset(w * 0.51f, h * 0.63f),
+                    strokeWidth = stripeWidth
+                )
+                drawLine(
+                    color = Color(0xFF93C5FD),
+                    start = androidx.compose.ui.geometry.Offset(w * 0.67f, h * 0.41f),
+                    end = androidx.compose.ui.geometry.Offset(w * 0.57f, h * 0.61f),
+                    strokeWidth = stripeWidth
+                )
+            }
+            "Bat control" -> {
+                rotate(45f, pivot = androidx.compose.ui.geometry.Offset(w/2f, h/2f)) {
+                    drawRoundRect(
+                        color = Color(0xFFFBBF24), // Vibrant Yellow
+                        topLeft = androidx.compose.ui.geometry.Offset(w * 0.38f, h * 0.4f),
+                        size = androidx.compose.ui.geometry.Size(w * 0.24f, h * 0.52f),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(2.dp.toPx(), 2.dp.toPx())
+                    )
+                    drawRoundRect(
+                        color = Color(0xFFEC4899), // Pink grip
+                        topLeft = androidx.compose.ui.geometry.Offset(w * 0.44f, h * 0.08f),
+                        size = androidx.compose.ui.geometry.Size(w * 0.12f, h * 0.35f),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(1.dp.toPx(), 1.dp.toPx())
+                    )
+                }
+                drawCircle(
+                    color = Color(0xFFDC2626), // Cricket ball
+                    radius = 2.4.dp.toPx(),
+                    center = androidx.compose.ui.geometry.Offset(w * 0.25f, h * 0.72f)
+                )
+            }
+            "Cover drive" -> {
+                rotate(-30f) {
+                    drawRoundRect(
+                        color = Color(0xFFCBB093),
+                        topLeft = androidx.compose.ui.geometry.Offset(w*0.42f, h*0.35f),
+                        size = androidx.compose.ui.geometry.Size(w*0.16f, h*0.55f),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(1.dp.toPx(), 1.dp.toPx())
+                    )
+                    drawRoundRect(
+                        color = Color(0xFFEF4444),
+                        topLeft = androidx.compose.ui.geometry.Offset(w*0.46f, h*0.05f),
+                        size = androidx.compose.ui.geometry.Size(w*0.08f, h*0.3f),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(0.8.dp.toPx(), 0.8.dp.toPx())
+                    )
+                }
+                val starX = w * 0.78f
+                val starY = h * 0.65f
+                val starHalf = 3.5.dp.toPx()
+                val path = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(starX, starY - starHalf)
+                    quadraticTo(starX, starY, starX + starHalf, starY)
+                    quadraticTo(starX, starY, starX, starY + starHalf)
+                    quadraticTo(starX, starY, starX - starHalf, starY)
+                    quadraticTo(starX, starY, starX, starY - starHalf)
+                    close()
+                }
+                drawPath(path, color = Color(0xFFFBBF24))
+            }
+            "Pull shot" -> {
+                rotate(80f, pivot = androidx.compose.ui.geometry.Offset(w/2f, h/2f)) {
+                    drawRoundRect(
+                        color = Color(0xFFCBB093),
+                        topLeft = androidx.compose.ui.geometry.Offset(w*0.42f, h*0.35f),
+                        size = androidx.compose.ui.geometry.Size(w*0.16f, h*0.55f),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(1.dp.toPx(), 1.dp.toPx())
+                    )
+                    drawRoundRect(
+                        color = Color(0xFF10B981),
+                        topLeft = androidx.compose.ui.geometry.Offset(w*0.46f, h*0.05f),
+                        size = androidx.compose.ui.geometry.Size(w*0.08f, h*0.3f),
+                        cornerRadius = androidx.compose.ui.geometry.CornerRadius(0.8.dp.toPx(), 0.8.dp.toPx())
+                    )
+                }
+                drawArc(
+                    color = Color.White.copy(alpha = 0.8f),
+                    startAngle = 140f,
+                    sweepAngle = 90f,
+                    useCenter = false,
+                    topLeft = androidx.compose.ui.geometry.Offset(w * 0.1f, h * 0.1f),
+                    size = androidx.compose.ui.geometry.Size(w * 0.8f, h * 0.8f),
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round)
+                )
+            }
+            "Straight drive" -> {
+                drawRoundRect(
+                    color = Color(0xFFCBB093),
+                    topLeft = androidx.compose.ui.geometry.Offset(w*0.42f, h*0.4f),
+                    size = androidx.compose.ui.geometry.Size(w*0.16f, h*0.52f),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(1.5.dp.toPx(), 1.5.dp.toPx())
+                )
+                drawRoundRect(
+                    color = Color(0xFFF59E0B),
+                    topLeft = androidx.compose.ui.geometry.Offset(w*0.46f, h*0.08f),
+                    size = androidx.compose.ui.geometry.Size(w*0.08f, h*0.32f),
+                    cornerRadius = androidx.compose.ui.geometry.CornerRadius(0.8.dp.toPx(), 0.8.dp.toPx())
+                )
+                drawLine(
+                    color = Color(0xFF38BDF8),
+                    start = androidx.compose.ui.geometry.Offset(w*0.25f, h*0.8f),
+                    end = androidx.compose.ui.geometry.Offset(w*0.25f, h*0.3f),
+                    strokeWidth = 1.2.dp.toPx(),
+                    cap = androidx.compose.ui.graphics.StrokeCap.Round
+                )
+                drawLine(
+                    color = Color(0xFF38BDF8),
+                    start = androidx.compose.ui.geometry.Offset(w*0.75f, h*0.8f),
+                    end = androidx.compose.ui.geometry.Offset(w*0.75f, h*0.3f),
+                    strokeWidth = 1.2.dp.toPx(),
+                    cap = androidx.compose.ui.graphics.StrokeCap.Round
+                )
+            }
+            "Out-swing" -> {
+                drawCircle(color = Color(0xFFDC2626), radius = 5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(w*0.4f, h*0.5f))
+                rotate(-20f, pivot = androidx.compose.ui.geometry.Offset(w*0.4f, h*0.5f)) {
+                    drawLine(color = Color.White, start = androidx.compose.ui.geometry.Offset(w*0.4f, h*0.5f - 5.dp.toPx()), end = androidx.compose.ui.geometry.Offset(w*0.4f, h*0.5f + 5.dp.toPx()), strokeWidth = 1.2.dp.toPx())
+                }
+                val swingPath = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(w * 0.5f, h * 0.75f)
+                    quadraticTo(w * 0.7f, h * 0.65f, w * 0.85f, h * 0.35f)
+                }
+                drawPath(swingPath, color = Color(0xFF60A5FA), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round))
+            }
+            "In-swing" -> {
+                drawCircle(color = Color(0xFFDC2626), radius = 5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(w*0.6f, h*0.5f))
+                rotate(20f, pivot = androidx.compose.ui.geometry.Offset(w*0.6f, h*0.5f)) {
+                    drawLine(color = Color.White, start = androidx.compose.ui.geometry.Offset(w*0.6f, h*0.5f - 5.dp.toPx()), end = androidx.compose.ui.geometry.Offset(w*0.6f, h*0.5f + 5.dp.toPx()), strokeWidth = 1.2.dp.toPx())
+                }
+                val swingPath = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(w * 0.5f, h * 0.75f)
+                    quadraticTo(w * 0.3f, h * 0.65f, w * 0.15f, h * 0.35f)
+                }
+                drawPath(swingPath, color = Color(0xFFF87171), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round))
+            }
+            "Off-spin" -> {
+                drawArc(
+                    color = Color(0xFFA78BFA),
+                    startAngle = 0f,
+                    sweepAngle = 270f,
+                    useCenter = false,
+                    topLeft = androidx.compose.ui.geometry.Offset(w*0.15f, h*0.15f),
+                    size = androidx.compose.ui.geometry.Size(w*0.7f, h*0.7f),
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5.dp.toPx())
+                )
+                drawCircle(color = Color(0xFFDC2626), radius = 3.dp.toPx(), center = androidx.compose.ui.geometry.Offset(w*0.5f, h*0.5f))
+            }
+            "Leg-spin" -> {
+                drawArc(
+                    color = Color(0xFF22D3EE),
+                    startAngle = 90f,
+                    sweepAngle = 280f,
+                    useCenter = false,
+                    topLeft = androidx.compose.ui.geometry.Offset(w*0.1f, h*0.2f),
+                    size = androidx.compose.ui.geometry.Size(w*0.8f, h*0.6f),
+                    style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.5.dp.toPx())
+                )
+                drawCircle(color = Color(0xFFDC2626), radius = 3.5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(w*0.5f, h*0.5f))
+            }
+            "Yorker" -> {
+                drawLine(color = Color.White.copy(alpha = 0.5f), start = androidx.compose.ui.geometry.Offset(w*0.5f, h*0.15f), end = androidx.compose.ui.geometry.Offset(w*0.5f, h*0.85f), strokeWidth = 2.dp.toPx())
+                drawCircle(color = Color(0xFFDC2626), radius = 3.dp.toPx(), center = androidx.compose.ui.geometry.Offset(w*0.5f, h*0.8f))
+                drawCircle(color = Color(0xFFFBBF24), radius = 1.5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(w*0.5f, h*0.8f), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.0.dp.toPx()))
+            }
+            "Bouncer" -> {
+                drawLine(color = Color.White.copy(alpha = 0.3f), start = androidx.compose.ui.geometry.Offset(w*0.1f, h*0.85f), end = androidx.compose.ui.geometry.Offset(w*0.9f, h*0.85f), strokeWidth = 1.dp.toPx())
+                val path = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(w * 0.15f, h * 0.5f)
+                    lineTo(w * 0.45f, h * 0.85f)
+                    lineTo(w * 0.8f, h * 0.25f)
+                }
+                drawPath(path, color = Color(0xFFF472B6), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 1.6.dp.toPx(), cap = androidx.compose.ui.graphics.StrokeCap.Round, join = androidx.compose.ui.graphics.StrokeJoin.Round))
+                drawCircle(color = Color(0xFFDC2626), radius = 2.5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(w * 0.8f, h * 0.25f))
+            }
+            "Power hitting" -> {
+                val fireTail = androidx.compose.ui.graphics.Path().apply {
+                    moveTo(w*0.12f, h*0.5f)
+                    quadraticTo(w*0.35f, h*0.38f, w*0.62f, h*0.45f)
+                    lineTo(w*0.55f, h*0.55f)
+                    quadraticTo(w*0.3f, h*0.62f, w*0.12f, h*0.5f)
+                }
+                drawPath(fireTail, color = Color(0xFFF59E0B))
+                drawCircle(color = Color(0xFFDC2626), radius = 3.5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(w*0.65f, h*0.5f))
+                drawCircle(color = Color.White, radius = 1.5.dp.toPx(), center = androidx.compose.ui.geometry.Offset(w*0.65f, h*0.5f), style = androidx.compose.ui.graphics.drawscope.Stroke(width = 0.8.dp.toPx()))
+            }
+        }
+    }
+}
+

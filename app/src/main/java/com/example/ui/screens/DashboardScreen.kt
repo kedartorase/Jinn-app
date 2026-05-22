@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.border
 import com.example.data.Coach
 import com.example.ui.viewmodel.CricketViewModel
 
@@ -61,139 +62,169 @@ fun DashboardScreen(
             }
         }
 
-        // Custom Bottom Navigation Bar matching the image parameters
+        // Custom Bottom Navigation Bar exactly matching the mockup screenshot
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .navigationBarsPadding() // Notch and Gesture safe area rule
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(Color(0xFF1E2644).copy(alpha = 0.95f))
-                .padding(vertical = 10.dp)
+                .navigationBarsPadding()
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.CenterVertically
+            // 1. Pristine white bottom bar background container
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(72.dp)
+                    .background(Color.White)
+                    .border(width = 1.dp, color = Color(0xFFE2E8F0))
             ) {
-                // Tab 1: Home
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .clickable { selectedTab = MainTab.HOME }
-                        .testTag("submit_button")
-                        .padding(horizontal = 12.dp)
+                Row(
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Home,
-                        contentDescription = "Home",
-                        tint = if (selectedTab == MainTab.HOME) SportColors.GlowBlueAccent else Color.White.copy(alpha = 0.6f),
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text(
-                        "Home",
-                        color = if (selectedTab == MainTab.HOME) SportColors.GlowBlueAccent else Color.White.copy(alpha = 0.6f),
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                // Tab 2: My Booking
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .clickable { selectedTab = MainTab.BOOKINGS }
-                        .padding(horizontal = 4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.CalendarToday,
-                        contentDescription = "My Booking",
-                        tint = if (selectedTab == MainTab.BOOKINGS) SportColors.GlowBlueAccent else Color.White.copy(alpha = 0.6f),
-                        modifier = Modifier.size(22.dp)
-                    )
-                    Text(
-                        "My Booking",
-                        color = if (selectedTab == MainTab.BOOKINGS) SportColors.GlowBlueAccent else Color.White.copy(alpha = 0.6f),
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                // Tab 3: Central floating AI Button
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .offset(y = (-14).dp)
-                        .clickable { selectedTab = MainTab.AI_COACH }
-                ) {
-                    Box(
+                    // Tab 1: Home
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier
-                            .size(54.dp)
-                            .clip(CircleShape)
-                            .background(
-                                Brush.linearGradient(
-                                    colors = listOf(SportColors.ActiveBlue, SportColors.GlowBlueAccent)
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
+                            .weight(1f)
+                            .clickable { selectedTab = MainTab.HOME }
+                            .testTag("submit_button")
+                            .padding(vertical = 4.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.SmartToy,
-                            contentDescription = "AI Assistant",
-                            tint = Color.White,
-                            modifier = Modifier.size(26.dp)
+                        HomeIcon(
+                            tint = if (selectedTab == MainTab.HOME) Color(0xFF0F1E4C) else Color(0xFF8A93A6),
+                            filled = selectedTab == MainTab.HOME,
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = "Home",
+                            color = if (selectedTab == MainTab.HOME) Color(0xFF0F1E4C) else Color(0xFF8A93A6),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
-                    Text(
-                        "AI Assistant",
-                        color = if (selectedTab == MainTab.AI_COACH) SportColors.GlowBlueAccent else Color.White.copy(alpha = 0.6f),
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.offset(y = 4.dp)
-                    )
-                }
 
-                // Tab 4: CricTok
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .clickable { selectedTab = MainTab.CRICTOK }
-                        .padding(horizontal = 4.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.OndemandVideo,
-                        contentDescription = "CricTok",
-                        tint = if (selectedTab == MainTab.CRICTOK) SportColors.GlowBlueAccent else Color.White.copy(alpha = 0.6f),
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text(
-                        "CricTok",
-                        color = if (selectedTab == MainTab.CRICTOK) SportColors.GlowBlueAccent else Color.White.copy(alpha = 0.6f),
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                    // Tab 2: My Booking
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { selectedTab = MainTab.BOOKINGS }
+                            .padding(vertical = 4.dp)
+                    ) {
+                        CalendarIcon(
+                            tint = if (selectedTab == MainTab.BOOKINGS) Color(0xFF0F1E4C) else Color(0xFF8A93A6),
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = "My Booking",
+                            color = if (selectedTab == MainTab.BOOKINGS) Color(0xFF0F1E4C) else Color(0xFF8A93A6),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
 
-                // Tab 5: GinnMart Store (labeled Shopping Cart per screenshot image)
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    // Central tab empty placeholder spacer
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .size(68.dp)
+                    )
+
+                    // Tab 4: CricTok
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { selectedTab = MainTab.CRICTOK }
+                            .padding(vertical = 4.dp)
+                    ) {
+                        CricTokIcon(
+                            tint = if (selectedTab == MainTab.CRICTOK) Color(0xFF0F1E4C) else Color(0xFF8A93A6),
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = "CricTok",
+                            color = if (selectedTab == MainTab.CRICTOK) Color(0xFF0F1E4C) else Color(0xFF8A93A6),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    // Tab 5: JinnMart
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { selectedTab = MainTab.GINNMART }
+                            .padding(vertical = 4.dp)
+                    ) {
+                        ShoppingCartIcon(
+                            tint = if (selectedTab == MainTab.GINNMART) Color(0xFF0F1E4C) else Color(0xFF8A93A6),
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Spacer(modifier = Modifier.height(5.dp))
+                        Text(
+                            text = "JinnMart",
+                            color = if (selectedTab == MainTab.GINNMART) Color(0xFF0F1E4C) else Color(0xFF8A93A6),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+
+            // 2. The central elevated/protruding AI button overlapping on top with white border container
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .offset(y = (-18).dp)
+                    .size(68.dp)
+                    .clip(CircleShape)
+                    .background(Color.White)
+                    .border(1.dp, Color(0xFFE2E8F0), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
                     modifier = Modifier
-                        .clickable { selectedTab = MainTab.GINNMART }
-                        .padding(horizontal = 6.dp)
+                        .size(56.dp)
+                        .clip(CircleShape)
+                        .background(Color(0xFF2D46CD))
+                        .clickable { selectedTab = MainTab.AI_COACH },
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.ShoppingCart,
-                        contentDescription = "GinnMart Store",
-                        tint = if (selectedTab == MainTab.GINNMART) SportColors.GlowBlueAccent else Color.White.copy(alpha = 0.6f),
-                        modifier = Modifier.size(24.dp)
-                    )
-                    Text(
-                        "GinnMart",
-                        color = if (selectedTab == MainTab.GINNMART) SportColors.GlowBlueAccent else Color.White.copy(alpha = 0.6f),
-                        fontSize = 9.sp,
-                        fontWeight = FontWeight.Bold
-                    )
+                    Box(
+                        modifier = Modifier.size(36.dp, 30.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // The custom rounded Ai bubble box
+                        Box(
+                            modifier = Modifier
+                                .size(28.dp, 24.dp)
+                                .border(2.dp, Color.White, RoundedCornerShape(6.dp))
+                                .align(Alignment.BottomStart),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "Ai",
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Black,
+                                modifier = Modifier.offset(y = (-1).dp)
+                            )
+                        }
+                        
+                        // Overlapping custom 4-point sparkle star
+                        CustomSparkleStar(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .offset(x = (-2).dp, y = 2.dp)
+                        )
+                    }
                 }
             }
         }
@@ -267,5 +298,185 @@ fun DashboardScreen(
                 textContentColor = Color.White.copy(alpha = 0.8f)
             )
         }
+    }
+}
+
+@Composable
+fun CustomSparkleStar(modifier: Modifier = Modifier) {
+    androidx.compose.foundation.Canvas(modifier = modifier.size(10.dp)) {
+        val path = androidx.compose.ui.graphics.Path().apply {
+            moveTo(size.width / 2, 0f)
+            quadraticTo(size.width / 2, size.height / 2, size.width, size.height / 2)
+            quadraticTo(size.width / 2, size.height / 2, size.width / 2, size.height)
+            quadraticTo(size.width / 2, size.height / 2, 0f, size.height / 2)
+            quadraticTo(size.width / 2, size.height / 2, size.width / 2, 0f)
+            close()
+        }
+        drawPath(path, color = Color.White)
+    }
+}
+
+@Composable
+fun HomeIcon(tint: Color, filled: Boolean, modifier: Modifier = Modifier) {
+    if (filled) {
+        androidx.compose.foundation.Canvas(modifier = modifier.size(24.dp)) {
+            val path = androidx.compose.ui.graphics.Path().apply {
+                moveTo(12.dp.toPx(), 3.dp.toPx())
+                lineTo(3.dp.toPx(), 11.dp.toPx())
+                lineTo(3.dp.toPx(), 21.dp.toPx())
+                lineTo(10.dp.toPx(), 21.dp.toPx())
+                lineTo(10.dp.toPx(), 15.dp.toPx())
+                lineTo(14.dp.toPx(), 15.dp.toPx())
+                lineTo(14.dp.toPx(), 21.dp.toPx())
+                lineTo(21.dp.toPx(), 21.dp.toPx())
+                lineTo(21.dp.toPx(), 11.dp.toPx())
+                close()
+            }
+            drawPath(path, color = tint)
+        }
+    } else {
+        androidx.compose.foundation.Canvas(modifier = modifier.size(24.dp)) {
+            val strokeWidth = 1.6.dp.toPx()
+            val path = androidx.compose.ui.graphics.Path().apply {
+                moveTo(12.dp.toPx(), 4.dp.toPx())
+                lineTo(4.dp.toPx(), 11.dp.toPx())
+                lineTo(4.dp.toPx(), 20.dp.toPx())
+                lineTo(20.dp.toPx(), 20.dp.toPx())
+                lineTo(20.dp.toPx(), 11.dp.toPx())
+                close()
+            }
+            drawPath(
+                path = path,
+                color = tint,
+                style = androidx.compose.ui.graphics.drawscope.Stroke(
+                    width = strokeWidth,
+                    join = androidx.compose.ui.graphics.StrokeJoin.Round
+                )
+            )
+            drawLine(
+                color = tint,
+                start = androidx.compose.ui.geometry.Offset(12.dp.toPx(), 15.dp.toPx()),
+                end = androidx.compose.ui.geometry.Offset(12.dp.toPx(), 20.dp.toPx()),
+                strokeWidth = strokeWidth
+            )
+        }
+    }
+}
+
+@Composable
+fun CalendarIcon(tint: Color, modifier: Modifier = Modifier) {
+    androidx.compose.foundation.Canvas(modifier = modifier.size(24.dp)) {
+        val strokeWidth = 1.6.dp.toPx()
+        drawRoundRect(
+            color = tint,
+            topLeft = androidx.compose.ui.geometry.Offset(0f, 4.dp.toPx()),
+            size = androidx.compose.ui.geometry.Size(size.width, size.height - 4.dp.toPx()),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+            style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidth)
+        )
+        drawLine(
+            color = tint,
+            start = androidx.compose.ui.geometry.Offset(6.dp.toPx(), 0f),
+            end = androidx.compose.ui.geometry.Offset(6.dp.toPx(), 5.dp.toPx()),
+            strokeWidth = strokeWidth * 1.5f
+        )
+        drawLine(
+            color = tint,
+            start = androidx.compose.ui.geometry.Offset(size.width - 6.dp.toPx(), 0f),
+            end = androidx.compose.ui.geometry.Offset(size.width - 6.dp.toPx(), 5.dp.toPx()),
+            strokeWidth = strokeWidth * 1.5f
+        )
+        drawLine(
+            color = tint,
+            start = androidx.compose.ui.geometry.Offset(0f, 9.dp.toPx()),
+            end = androidx.compose.ui.geometry.Offset(size.width, 9.dp.toPx()),
+            strokeWidth = strokeWidth / 2
+        )
+        val dotRadius = 1.dp.toPx()
+        val startX = 6.dp.toPx()
+        val startY = 13.dp.toPx()
+        val gapX = 6.dp.toPx()
+        val gapY = 4.dp.toPx()
+        for (row in 0..1) {
+            for (col in 0..2) {
+                drawCircle(
+                    color = tint,
+                    radius = dotRadius,
+                    center = androidx.compose.ui.geometry.Offset(startX + col * gapX, startY + row * gapY)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun CricTokIcon(tint: Color, modifier: Modifier = Modifier) {
+    androidx.compose.foundation.Canvas(modifier = modifier.size(24.dp)) {
+        val strokeWidth = 1.6.dp.toPx()
+        drawRoundRect(
+            color = tint,
+            topLeft = androidx.compose.ui.geometry.Offset(0f, 4.dp.toPx()),
+            size = androidx.compose.ui.geometry.Size(size.width, size.height - 4.dp.toPx()),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(4.dp.toPx(), 4.dp.toPx()),
+            style = androidx.compose.ui.graphics.drawscope.Stroke(width = strokeWidth)
+        )
+        drawLine(
+            color = tint,
+            start = androidx.compose.ui.geometry.Offset(0f, 9.dp.toPx()),
+            end = androidx.compose.ui.geometry.Offset(size.width, 9.dp.toPx()),
+            strokeWidth = strokeWidth
+        )
+        val slashes = listOf(5.dp, 10.dp, 15.dp, 20.dp)
+        slashes.forEach { offset ->
+            drawLine(
+                color = tint,
+                start = androidx.compose.ui.geometry.Offset(offset.toPx(), 4.dp.toPx()),
+                end = androidx.compose.ui.geometry.Offset((offset - 4.dp).toPx(), 9.dp.toPx()),
+                strokeWidth = strokeWidth
+            )
+        }
+        val path = androidx.compose.ui.graphics.Path().apply {
+            val cx = size.width / 2f
+            val cy = size.height / 2f + 2.dp.toPx()
+            moveTo(cx - 3.dp.toPx(), cy - 4.dp.toPx())
+            lineTo(cx + 4.dp.toPx(), cy)
+            lineTo(cx - 3.dp.toPx(), cy + 4.dp.toPx())
+            close()
+        }
+        drawPath(path, color = tint)
+    }
+}
+
+@Composable
+fun ShoppingCartIcon(tint: Color, modifier: Modifier = Modifier) {
+    androidx.compose.foundation.Canvas(modifier = modifier.size(24.dp)) {
+        val strokeWidth = 1.6.dp.toPx()
+        val path = androidx.compose.ui.graphics.Path().apply {
+            moveTo(2.dp.toPx(), 4.dp.toPx())
+            lineTo(5.dp.toPx(), 4.dp.toPx())
+            lineTo(8.dp.toPx(), 13.dp.toPx())
+            lineTo(18.dp.toPx(), 13.dp.toPx())
+            lineTo(20.5.dp.toPx(), 6.dp.toPx())
+            lineTo(7.dp.toPx(), 6.dp.toPx())
+        }
+        drawPath(
+            path = path,
+            color = tint,
+            style = androidx.compose.ui.graphics.drawscope.Stroke(
+                width = strokeWidth,
+                join = androidx.compose.ui.graphics.StrokeJoin.Round,
+                cap = androidx.compose.ui.graphics.StrokeCap.Round
+            )
+        )
+        drawCircle(
+            color = tint,
+            radius = 1.8.dp.toPx(),
+            center = androidx.compose.ui.geometry.Offset(9.dp.toPx(), 17.dp.toPx())
+        )
+        drawCircle(
+            color = tint,
+            radius = 1.8.dp.toPx(),
+            center = androidx.compose.ui.geometry.Offset(17.dp.toPx(), 17.dp.toPx())
+        )
     }
 }
