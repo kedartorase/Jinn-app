@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -42,33 +44,29 @@ fun BookingsTab(viewModel: CricketViewModel) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Module Title Header
-            Text(
-                text = "My Coaching Bookings",
-                color = SportColors.TextPrimary,
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Black
-            )
-            Text(
-                text = "Track upcoming net practices, sessions, and training feedback logs.",
-                color = SportColors.TextSecondary,
-                fontSize = 12.sp,
-                modifier = Modifier.padding(bottom = 20.dp)
+            TabSportyHeader(
+                title = "My Booking",
+                subtitle = "Track upcoming net practices, sessions, and training feedback logs.",
+                viewModel = viewModel
             )
 
-            // Split 1: Upcoming Sessions
-            Text(
-                text = "Upcoming Live Batches (${upcomingBookings.size})",
-                color = SportColors.TextPrimary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 24.dp)
+            ) {
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Split 1: Upcoming Sessions
+                Text(
+                    text = "Upcoming Live Batches (${upcomingBookings.size})",
+                    color = SportColors.TextPrimary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
 
             if (upcomingBookings.isEmpty()) {
                 Box(
@@ -117,11 +115,22 @@ fun BookingsTab(viewModel: CricketViewModel) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    CoachAvatarIllustration(
-                                        modifier = Modifier.size(34.dp),
-                                        coachName = booking.coachName,
-                                        primaryColor = SportColors.ActiveBlue
-                                    )
+                                    if (booking.coachImageUrl.isNotEmpty()) {
+                                        AsyncImage(
+                                            model = booking.coachImageUrl,
+                                            contentDescription = booking.coachName,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(34.dp)
+                                                .clip(CircleShape)
+                                        )
+                                    } else {
+                                        CoachAvatarIllustration(
+                                            modifier = Modifier.size(34.dp),
+                                            coachName = booking.coachName,
+                                            primaryColor = SportColors.ActiveBlue
+                                        )
+                                    }
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
                                         Text(
@@ -188,13 +197,12 @@ fun BookingsTab(viewModel: CricketViewModel) {
                                 }
 
                                 // Interactive Complete simulator button (to generate rich reports card)
-                                Button(
+                                GradientButton(
                                     onClick = { showCompleteDialog = booking },
                                     modifier = Modifier.weight(1.2f),
-                                    colors = ButtonDefaults.buttonColors(containerColor = SportColors.SportGreen),
                                     shape = RoundedCornerShape(8.dp)
                                 ) {
-                                    Text("Complete Session ✓", fontSize = 11.sp)
+                                    Text("Complete Session ✓", fontSize = 11.sp, maxLines = 1)
                                 }
                             }
                         }
@@ -248,11 +256,22 @@ fun BookingsTab(viewModel: CricketViewModel) {
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    CoachAvatarIllustration(
-                                        modifier = Modifier.size(34.dp),
-                                        coachName = booking.coachName,
-                                        primaryColor = SportColors.SportGreen
-                                    )
+                                    if (booking.coachImageUrl.isNotEmpty()) {
+                                        AsyncImage(
+                                            model = booking.coachImageUrl,
+                                            contentDescription = booking.coachName,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .size(34.dp)
+                                                .clip(CircleShape)
+                                        )
+                                    } else {
+                                        CoachAvatarIllustration(
+                                            modifier = Modifier.size(34.dp),
+                                            coachName = booking.coachName,
+                                            primaryColor = SportColors.SportGreen
+                                        )
+                                    }
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
                                         Text(
@@ -307,6 +326,7 @@ fun BookingsTab(viewModel: CricketViewModel) {
             }
 
             Spacer(modifier = Modifier.height(110.dp))
+            }
         }
 
         // Complete Session simulation notes dialog overlay
@@ -383,7 +403,7 @@ fun BookingsTab(viewModel: CricketViewModel) {
 
                         Spacer(modifier = Modifier.height(16.dp))
 
-                        Button(
+                        GradientButton(
                             onClick = {
                                 val finalNotes = if (simNotes.isBlank()) "Great balance throughout the strokes alignment." else simNotes
                                 viewModel.simulateCompletionFlow(bookingToComplete, finalNotes, simGrade)
@@ -391,8 +411,8 @@ fun BookingsTab(viewModel: CricketViewModel) {
                                 simNotes = ""
                                 simGrade = "A"
                             },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(containerColor = SportColors.SportGreen)
+                            modifier = Modifier.fillMaxWidth().height(48.dp),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Text("Confirm & Log Diagnostics ✍️", fontWeight = FontWeight.Bold)
                         }

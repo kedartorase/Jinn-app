@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.border
 import com.example.data.Coach
+import com.example.R
 import com.example.ui.viewmodel.CricketViewModel
 
 enum class MainTab {
@@ -193,7 +194,7 @@ fun DashboardScreen(
                     modifier = Modifier
                         .size(56.dp)
                         .clip(CircleShape)
-                        .background(Color(0xFF2D46CD))
+                        .background(SportColors.PrimaryGradient)
                         .clickable { selectedTab = MainTab.AI_COACH },
                     contentAlignment = Alignment.Center
                 ) {
@@ -254,16 +255,15 @@ fun DashboardScreen(
             AlertDialog(
                 onDismissRequest = { showGroupSessionToastAlert = false },
                 confirmButton = {
-                    Button(
-                        colors = ButtonDefaults.buttonColors(containerColor = SportColors.SportGreen),
+                    GradientButton(
                         onClick = {
                             // Automatically insert group session booking to Room
                             val groupCoach = Coach(
                                 id = "group_vikas",
                                 name = "Vikas SD",
-                                imageUrl = "",
+                                imageUrl = "android.resource://com.example/" + R.drawable.img_coach_3,
                                 skills = "Batting Techniques",
-                                rating = 4.8f,
+                                rating = 4.9f,
                                 reviewsCount = 142,
                                 isVerified = true,
                                 bio = "Group setup",

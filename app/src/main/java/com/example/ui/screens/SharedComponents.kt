@@ -8,9 +8,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.foundation.clickable
+import com.example.ui.viewmodel.CricketViewModel
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +24,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.foundation.Image
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.layout.ContentScale
+import com.example.R
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -31,7 +39,12 @@ object SportColors {
     val DeepBlueHeader = Color(0xFF0A1E3C)
     val DeepBlueHeaderEnd = Color(0xFF1A3A6D)
     val GlowBlueAccent = Color(0xFF2563EB)
-    val ActiveBlue = Color(0xFF1D4ED8)
+    val ActiveBlue = Color(0xFF1F2C73) // Matches primary gradient start
+    val PrimaryGradientStart = Color(0xFF1F2C73)
+    val PrimaryGradientEnd = Color(0xFF0F1633)
+    val PrimaryGradient = Brush.verticalGradient(
+        colors = listOf(PrimaryGradientStart, PrimaryGradientEnd)
+    )
     val SportGreen = Color(0xFF10B981)
     val SportGreenDark = Color(0xFF047857)
     val BrightOrange = Color(0xFFF97316)
@@ -266,5 +279,205 @@ fun StarRatingBar(rating: Float, modifier: Modifier = Modifier) {
             tint = SportColors.GoldYellow,
             modifier = Modifier.size(13.dp)
         )
+    }
+}
+
+@Composable
+fun JinnAppLogo(
+    modifier: Modifier = Modifier,
+    showText: Boolean = true
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(160.dp)
+                .clip(RoundedCornerShape(28.dp))
+                .background(SportColors.PrimaryGradient)
+                .border(2.5.dp, Color(0xFF2D46CD), RoundedCornerShape(28.dp))
+                .padding(4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_jinn_logo),
+                contentDescription = "JINN Logo",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Crop
+            )
+        }
+        // No extra text is needed since ic_jinn_logo already includes the high-quality styled cyan 'JINN' wordmark inside it!
+    }
+}
+
+@Composable
+fun GradientButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    testTag: String? = null,
+    shape: androidx.compose.ui.graphics.Shape = RoundedCornerShape(24.dp),
+    content: @Composable RowScope.() -> Unit
+) {
+    val buttonModifier = if (testTag != null) {
+        modifier.testTag(testTag)
+    } else {
+        modifier
+    }
+    Button(
+        onClick = onClick,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+            contentColor = Color.White,
+            disabledContainerColor = Color.Transparent,
+            disabledContentColor = Color.White.copy(alpha = 0.5f)
+        ),
+        contentPadding = PaddingValues(),
+        enabled = enabled,
+        shape = shape,
+        modifier = buttonModifier
+    ) {
+        val alpha = if (enabled) 1f else 0.5f
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    brush = SportColors.PrimaryGradient,
+                    alpha = alpha
+                )
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                CompositionLocalProvider(LocalContentColor provides Color.White) {
+                    content()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun TabSportyHeader(
+    title: String,
+    subtitle: String,
+    viewModel: CricketViewModel,
+    modifier: Modifier = Modifier,
+    extraContent: @Composable ColumnScope.() -> Unit = {}
+) {
+    val userProfile by viewModel.userProfile.collectAsState()
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(SportColors.DeepBlueHeader, Color(0xFF132252), SportColors.DarkBackground)
+                )
+            )
+            .padding(bottom = 24.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .statusBarsPadding()
+        ) {
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Top Row: Avatar, Greeting, notification widget
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // User Avatar
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(SportColors.SoftCardBg),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "User Initials",
+                        tint = SportColors.GlowBlueAccent
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                // Greeting and Location
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Hello, ${userProfile.name}",
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable { /* Simulate location select */ }
+                    ) {
+                        Text(
+                            text = userProfile.location,
+                            color = Color.White.copy(alpha = 0.6f),
+                            fontSize = 11.sp
+                        )
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowRight,
+                            contentDescription = "Change Location",
+                            tint = Color.White.copy(alpha = 0.6f),
+                            modifier = Modifier.size(12.dp)
+                        )
+                    }
+                }
+
+                // Notification Icon
+                IconButton(
+                    onClick = { /* Actions */ },
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    BadgedBox(
+                        badge = { Badge { Text("1") } }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Notifications,
+                            contentDescription = "Notifications",
+                            tint = Color.White,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Title
+            Text(
+                text = title,
+                color = Color.White,
+                fontSize = 32.sp,
+                fontWeight = FontWeight.Black
+            )
+            
+            if (subtitle.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = subtitle,
+                    color = Color.White.copy(alpha = 0.8f),
+                    fontSize = 12.sp,
+                    lineHeight = 16.sp
+                )
+            }
+
+            extraContent()
+        }
     }
 }

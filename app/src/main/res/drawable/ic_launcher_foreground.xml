@@ -1,30 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:pathData="M31,63.928c0,0 6.4,-11 12.1,-13.1c7.2,-2.6 26,-1.4 26,-1.4l38.1,38.1L107,108.928l-32,-1L31,63.928z">
-        <aapt:attr name="android:fillColor">
-            <gradient
-                android:endX="85.84757"
-                android:endY="92.4963"
-                android:startX="42.9492"
-                android:startY="49.59793"
-                android:type="linear">
-                <item
-                    android:color="#44000000"
-                    android:offset="0.0" />
-                <item
-                    android:color="#00000000"
-                    android:offset="1.0" />
-            </gradient>
-        </aapt:attr>
-    </path>
+    
+    <!-- Elegant wrapping blue/cyan swoosh -->
     <path
-        android:fillColor="#FFFFFF"
-        android:fillType="nonZero"
-        android:pathData="M65.3,45.828l3.8,-6.6c0.2,-0.4 0.1,-0.9 -0.3,-1.1c-0.4,-0.2 -0.9,-0.1 -1.1,0.3l-3.9,6.7c-6.3,-2.8 -13.4,-2.8 -19.7,0l-3.9,-6.7c-0.2,-0.4 -0.7,-0.5 -1.1,-0.3C38.8,38.328 38.7,38.828 38.9,39.228l3.8,6.6C36.2,49.428 31.7,56.028 31,63.928h46C76.3,56.028 71.8,49.428 65.3,45.828zM43.4,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2c-0.3,-0.7 -0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C45.3,56.528 44.5,57.328 43.4,57.328L43.4,57.328zM64.6,57.328c-0.8,0 -1.5,-0.5 -1.8,-1.2s-0.1,-1.5 0.4,-2.1c0.5,-0.5 1.4,-0.7 2.1,-0.4c0.7,0.3 1.2,1 1.2,1.8C66.5,56.528 65.6,57.328 64.6,57.328L64.6,57.328z"
-        android:strokeWidth="1"
-        android:strokeColor="#00000000" />
+        android:pathData="M 27.6, 63.9 C 24.3, 40.8 54.0, 28.26 80.4, 44.1 C 83.7, 54.0 67.2, 73.8 34.2, 70.5 C 26.28, 69.18 40.8, 60.6 27.6, 63.9 Z"
+        android:strokeWidth="3.5"
+        android:strokeColor="#38BDF8"
+        android:fillColor="#00000000" />
+
+    <!-- Slanted golden cricket bat blade -->
+    <path
+        android:pathData="M 57.3, 44.1 L 59.94, 46.74 L 39.48, 70.5 L 34.2, 64.56 Z"
+        android:fillColor="#EAB308" />
+
+    <!-- Golden cricket bat handle/grip -->
+    <path
+        android:pathData="M 70.5, 30.9 L 54.0, 47.4"
+        android:strokeWidth="4"
+        android:strokeColor="#EAB308" />
+
+    <!-- Genie Lamp -->
+    <path
+        android:pathData="M 57.3, 75.12 L 68.52, 75.12 L 65.88, 71.16 L 55.32, 69.18 C 52.68, 60.6 71.16, 59.28 77.1, 65.88 L 83.7, 61.92 C 80.4, 71.16 68.52, 73.8 62.58, 71.16 Z"
+        android:fillColor="#EAB308" />
+
+    <!-- Lamp curly handle -->
+    <path
+        android:pathData="M 55.32, 69.18 C 51.36, 68.52 50.04, 72.48 52.68, 73.8"
+        android:strokeWidth="2"
+        android:strokeColor="#EAB308"
+        android:fillColor="#00000000" />
+
+    <!-- Stylized curly smoke rising from spout -->
+    <path
+        android:pathData="M 81.72, 59.28 C 83.04, 51.36 76.44, 48.72 77.76, 42.12 C 79.08, 36.84 83.7, 43.44 81.72, 47.4"
+        android:strokeWidth="2"
+        android:strokeColor="#EAB308"
+        android:fillColor="#00000000" />
 </vector>

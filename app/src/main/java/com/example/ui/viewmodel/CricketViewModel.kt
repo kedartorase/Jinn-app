@@ -171,9 +171,14 @@ class CricketViewModel(application: Application) : AndroidViewModel(application)
     }
 
     // Room Booking CRUD Actions
-    fun bookSession(coach: Coach, date: String, timeSlot: String) {
+    fun bookSession(coach: Coach, date: String, timeSlot: String, customNotes: String = "") {
         viewModelScope.launch {
             val user = userProfile.value
+            val notes = if (customNotes.isNotEmpty()) {
+                customNotes
+            } else {
+                "Practice focus: ${user.preferredSkills}. Bring proper cricket safety guards and bat."
+            }
             val newBooking = Booking(
                 coachId = coach.id,
                 coachName = coach.name,
@@ -184,7 +189,7 @@ class CricketViewModel(application: Application) : AndroidViewModel(application)
                 timeSlot = timeSlot,
                 price = coach.sessionPrice,
                 status = "Upcoming",
-                sessionNotes = "Practice focus: ${user.preferredSkills}. Bring proper cricket safety guards and bat."
+                sessionNotes = notes
             )
             repository.createBooking(newBooking)
         }

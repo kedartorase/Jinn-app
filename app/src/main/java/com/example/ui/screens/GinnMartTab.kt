@@ -369,7 +369,7 @@ fun GinnMartTab(viewModel: CricketViewModel) {
 
                         Spacer(modifier = Modifier.height(18.dp))
 
-                        Button(
+                        GradientButton(
                             onClick = {
                                 viewModel.clearCart()
                                 showCartDialog = false
@@ -377,9 +377,9 @@ fun GinnMartTab(viewModel: CricketViewModel) {
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
-                                .testTag("submit_button"),
-                            colors = ButtonDefaults.buttonColors(containerColor = SportColors.SportGreen)
+                                .height(50.dp),
+                            testTag = "submit_button",
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Text("Place Order & Pay 💳", fontWeight = FontWeight.Bold)
                         }
@@ -434,10 +434,10 @@ fun GinnMartTab(viewModel: CricketViewModel) {
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        Button(
+                        GradientButton(
                             onClick = { orderSuccess = false },
-                            colors = ButtonDefaults.buttonColors(containerColor = SportColors.ActiveBlue),
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Text("Continue Shopping", fontWeight = FontWeight.Bold)
                         }

@@ -80,39 +80,19 @@ fun LoginScreen(
         ) {
             Spacer(modifier = Modifier.height(40.dp))
 
-            // App branding header
-            Box(
-                modifier = Modifier
-                    .size(90.dp)
-                    .clip(CircleShape)
-                    .background(
-                        Brush.linearGradient(
-                            colors = listOf(SportColors.ActiveBlue, SportColors.GlowBlueAccent)
-                        )
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                CustomCricketBatGraphic(
-                    modifier = Modifier.size(60.dp),
-                    woodColor = Color(0xFFFFD4A0),
-                    gripColor = SportColors.BrightOrange
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Text(
-                text = "FIND COACH",
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Black,
-                color = Color.White,
-                letterSpacing = 2.sp
+            // App branding header utilizing the beautiful Jinn app logo
+            JinnAppLogo(
+                modifier = Modifier.wrapContentSize(),
+                showText = true
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
             Text(
-                text = "The Modern Cricket Academy Engine",
+                text = "Master Your Game with the Right Coach",
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Light,
-                color = SportColors.GlowBlueAccent,
+                fontWeight = FontWeight.Bold,
+                color = SportColors.ActiveBlue,
                 textAlign = TextAlign.Center
             )
 
@@ -121,9 +101,10 @@ fun LoginScreen(
             if (authMode == "PROFILES") {
                 // Profile & Role Setup Cards (Professional / Sports feel)
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg)
+                     modifier = Modifier.fillMaxWidth(),
+                     shape = RoundedCornerShape(16.dp),
+                     colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg),
+                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
                         modifier = Modifier.padding(20.dp),
@@ -133,7 +114,7 @@ fun LoginScreen(
                             text = "Select Application Role",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White,
+                            color = SportColors.TextPrimary,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
 
@@ -150,23 +131,19 @@ fun LoginScreen(
                                         .height(44.dp)
                                         .clip(RoundedCornerShape(8.dp))
                                         .background(
-                                            if (isSelected) SportColors.ActiveBlue else Color.White.copy(
-                                                alpha = 0.07f
-                                            )
+                                            if (isSelected) SportColors.ActiveBlue else SportColors.DarkBackground
                                         )
                                         .clickable { selectedRole = role }
                                         .border(
                                             width = 1.5.dp,
-                                            color = if (isSelected) SportColors.GlowBlueAccent else Color.Transparent,
+                                            color = if (isSelected) SportColors.GlowBlueAccent else SportColors.CardBorder,
                                             shape = RoundedCornerShape(8.dp)
                                         ),
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Text(
                                         text = role.name.capitalize(),
-                                        color = if (isSelected) Color.White else Color.White.copy(
-                                            alpha = 0.7f
-                                        ),
+                                        color = if (isSelected) Color.White else SportColors.TextPrimary,
                                         fontWeight = FontWeight.Bold,
                                         fontSize = 12.sp
                                     )
@@ -180,7 +157,7 @@ fun LoginScreen(
                             text = "Bio & Setup Details",
                             fontSize = 16.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White,
+                            color = SportColors.TextPrimary,
                             modifier = Modifier.padding(bottom = 12.dp)
                         )
 
@@ -192,12 +169,14 @@ fun LoginScreen(
                                 .fillMaxWidth()
                                 .testTag("username_input"),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = SportColors.GlowBlueAccent,
-                                unfocusedBorderColor = Color.White.copy(alpha = 0.2f),
-                                focusedLabelColor = SportColors.GlowBlueAccent,
-                                unfocusedLabelColor = Color.White.copy(alpha = 0.5f),
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
+                                focusedBorderColor = SportColors.ActiveBlue,
+                                unfocusedBorderColor = SportColors.CardBorder,
+                                focusedLabelColor = SportColors.ActiveBlue,
+                                unfocusedLabelColor = SportColors.TextSecondary,
+                                focusedTextColor = SportColors.TextPrimary,
+                                unfocusedTextColor = SportColors.TextPrimary,
+                                focusedContainerColor = SportColors.DarkBackground,
+                                unfocusedContainerColor = SportColors.DarkBackground
                             ),
                             singleLine = true
                         )
@@ -211,10 +190,14 @@ fun LoginScreen(
                                 label = { Text("Age") },
                                 modifier = Modifier.weight(1f),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = SportColors.GlowBlueAccent,
-                                    unfocusedBorderColor = Color.White.copy(alpha = 0.2f),
-                                    focusedTextColor = Color.White,
-                                    unfocusedTextColor = Color.White
+                                    focusedBorderColor = SportColors.ActiveBlue,
+                                    unfocusedBorderColor = SportColors.CardBorder,
+                                    focusedLabelColor = SportColors.ActiveBlue,
+                                    unfocusedLabelColor = SportColors.TextSecondary,
+                                    focusedTextColor = SportColors.TextPrimary,
+                                    unfocusedTextColor = SportColors.TextPrimary,
+                                    focusedContainerColor = SportColors.DarkBackground,
+                                    unfocusedContainerColor = SportColors.DarkBackground
                                 ),
                                 singleLine = true
                             )
@@ -225,10 +208,14 @@ fun LoginScreen(
                                 label = { Text("Academy Location") },
                                 modifier = Modifier.weight(2f),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = SportColors.GlowBlueAccent,
-                                    unfocusedBorderColor = Color.White.copy(alpha = 0.2f),
-                                    focusedTextColor = Color.White,
-                                    unfocusedTextColor = Color.White
+                                    focusedBorderColor = SportColors.ActiveBlue,
+                                    unfocusedBorderColor = SportColors.CardBorder,
+                                    focusedLabelColor = SportColors.ActiveBlue,
+                                    unfocusedLabelColor = SportColors.TextSecondary,
+                                    focusedTextColor = SportColors.TextPrimary,
+                                    unfocusedTextColor = SportColors.TextPrimary,
+                                    focusedContainerColor = SportColors.DarkBackground,
+                                    unfocusedContainerColor = SportColors.DarkBackground
                                 ),
                                 singleLine = true
                             )
@@ -242,10 +229,14 @@ fun LoginScreen(
                             label = { Text("Playing Experience (e.g. 1 Year)") },
                             modifier = Modifier.fillMaxWidth(),
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = SportColors.GlowBlueAccent,
-                                unfocusedBorderColor = Color.White.copy(alpha = 0.2f),
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
+                                focusedBorderColor = SportColors.ActiveBlue,
+                                unfocusedBorderColor = SportColors.CardBorder,
+                                focusedLabelColor = SportColors.ActiveBlue,
+                                unfocusedLabelColor = SportColors.TextSecondary,
+                                focusedTextColor = SportColors.TextPrimary,
+                                unfocusedTextColor = SportColors.TextPrimary,
+                                focusedContainerColor = SportColors.DarkBackground,
+                                unfocusedContainerColor = SportColors.DarkBackground
                             ),
                             singleLine = true
                         )
@@ -256,7 +247,7 @@ fun LoginScreen(
                             text = "Preferred Skills of Focus",
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White.copy(alpha = 0.9f)
+                            color = SportColors.TextPrimary
                         )
 
                         // Chips matrix setup
@@ -273,13 +264,11 @@ fun LoginScreen(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(20.dp))
                                         .background(
-                                            if (selected) SportColors.SportGreen else Color.White.copy(
-                                                alpha = 0.08f
-                                            )
+                                            if (selected) SportColors.SportGreen else SportColors.DarkBackground
                                         )
                                         .border(
                                             width = 1.dp,
-                                            color = if (selected) Color.White else Color.Transparent,
+                                            color = if (selected) Color.Transparent else SportColors.CardBorder,
                                             shape = RoundedCornerShape(20.dp)
                                         )
                                         .clickable {
@@ -292,7 +281,12 @@ fun LoginScreen(
                                         .padding(horizontal = 12.dp, vertical = 6.dp)
                                 ) {
                                     Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(text = skill, color = Color.White, fontSize = 11.sp)
+                                        Text(
+                                            text = skill,
+                                            color = if (selected) Color.White else SportColors.TextSecondary,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Medium
+                                        )
                                         if (selected) {
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Icon(
@@ -309,8 +303,8 @@ fun LoginScreen(
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        // Submit profile and setup
-                        Button(
+                        // Submit profile and setup with explicitly high-contrast white text on primary blue button
+                        GradientButton(
                             onClick = {
                                 val skillsStr = selectedSkills.value.joinToString(", ")
                                 val parsedAge = ageString.toIntOrNull() ?: 24
@@ -327,13 +321,16 @@ fun LoginScreen(
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(48.dp)
-                                .testTag("login_button"),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = SportColors.SportGreen
-                            )
+                                .height(48.dp),
+                            testTag = "login_button",
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Confirm Profile Setup 🏏", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(
+                                text = "Confirm Profile Setup 🏏",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 16.sp
+                            )
                         }
                     }
                 }
@@ -342,7 +339,8 @@ fun LoginScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg)
+                    colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
                         modifier = Modifier.padding(20.dp),
@@ -352,13 +350,13 @@ fun LoginScreen(
                             text = "Authenticate Account",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White,
+                            color = SportColors.TextPrimary,
                             modifier = Modifier.padding(bottom = 6.dp)
                         )
                         Text(
                             text = "Logged in profile: ${userProfile.name} (${selectedRole.name})",
                             fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.6f),
+                            color = SportColors.TextSecondary,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(bottom = 20.dp)
                         )
@@ -370,7 +368,7 @@ fun LoginScreen(
                                 .height(46.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFEA4335)) // G-Color
                         ) {
-                            Text("Continue with Google", fontWeight = FontWeight.Bold)
+                            Text("Continue with Google", color = Color.White, fontWeight = FontWeight.Bold)
                         }
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -382,7 +380,7 @@ fun LoginScreen(
                                 .height(46.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = Color.Black) // Apple-Color
                         ) {
-                            Text("Continue with Apple", fontWeight = FontWeight.Bold, color = Color.White)
+                            Text("Continue with Apple", color = Color.White, fontWeight = FontWeight.Bold)
                         }
 
                         Spacer(modifier = Modifier.height(10.dp))
@@ -391,30 +389,30 @@ fun LoginScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(vertical = 10.dp)
                         ) {
-                            Divider(modifier = Modifier.weight(1f), color = Color.White.copy(alpha = 0.15f))
+                            HorizontalDivider(modifier = Modifier.weight(1f), color = SportColors.CardBorder)
                             Text(
-                                " OR ",
-                                color = Color.White.copy(alpha = 0.5f),
+                                text = " OR ",
+                                color = SportColors.TextSecondary,
                                 fontSize = 12.sp,
                                 modifier = Modifier.padding(horizontal = 10.dp)
                             )
-                            Divider(modifier = Modifier.weight(1f), color = Color.White.copy(alpha = 0.15f))
+                            HorizontalDivider(modifier = Modifier.weight(1f), color = SportColors.CardBorder)
                         }
 
-                        Button(
+                        GradientButton(
                             onClick = { authMode = "OTP" },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(46.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = SportColors.ActiveBlue)
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Quick Mobile OTP Login 📱", fontWeight = FontWeight.Bold)
+                            Text("Quick Mobile OTP Login 📱", color = Color.White, fontWeight = FontWeight.Bold)
                         }
 
                         Spacer(modifier = Modifier.height(15.dp))
 
                         TextButton(onClick = { authMode = "PROFILES" }) {
-                            Text("← Edit profile setup details", color = SportColors.GlowBlueAccent)
+                            Text("← Edit profile setup details", color = SportColors.ActiveBlue)
                         }
                     }
                 }
@@ -423,7 +421,8 @@ fun LoginScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
-                    colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg)
+                    colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
                         modifier = Modifier.padding(20.dp),
@@ -433,12 +432,12 @@ fun LoginScreen(
                             text = "OTP Code Verification",
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White
+                            color = SportColors.TextPrimary
                         )
                         Text(
                             text = "A code of 6-digits was simulated to your setup device.",
                             fontSize = 12.sp,
-                            color = Color.White.copy(alpha = 0.5f),
+                            color = SportColors.TextSecondary,
                             textAlign = TextAlign.Center,
                             modifier = Modifier.padding(top = 4.dp, bottom = 20.dp)
                         )
@@ -450,30 +449,34 @@ fun LoginScreen(
                             modifier = Modifier.fillMaxWidth(),
                             placeholder = { Text("123456") },
                             colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = SportColors.GlowBlueAccent,
-                                unfocusedBorderColor = Color.White.copy(alpha = 0.2f),
-                                focusedTextColor = Color.White,
-                                unfocusedTextColor = Color.White
+                                focusedBorderColor = SportColors.ActiveBlue,
+                                unfocusedBorderColor = SportColors.CardBorder,
+                                focusedLabelColor = SportColors.ActiveBlue,
+                                unfocusedLabelColor = SportColors.TextSecondary,
+                                focusedTextColor = SportColors.TextPrimary,
+                                unfocusedTextColor = SportColors.TextPrimary,
+                                focusedContainerColor = SportColors.DarkBackground,
+                                unfocusedContainerColor = SportColors.DarkBackground
                             ),
                             singleLine = true
                         )
 
                         Spacer(modifier = Modifier.height(20.dp))
 
-                        Button(
+                        GradientButton(
                             onClick = { onLoginSuccess() },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(48.dp),
-                            colors = ButtonDefaults.buttonColors(containerColor = SportColors.SportGreen)
+                            shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Verify Code & Start!", fontWeight = FontWeight.Bold)
+                            Text("Verify Code & Start!", color = Color.White, fontWeight = FontWeight.Bold)
                         }
 
                         Spacer(modifier = Modifier.height(15.dp))
 
                         TextButton(onClick = { authMode = "SOCIAL" }) {
-                            Text("← Back to social login options", color = SportColors.GlowBlueAccent)
+                            Text("← Back to social login options", color = SportColors.ActiveBlue)
                         }
                     }
                 }

@@ -15,9 +15,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.Coach
@@ -41,6 +46,7 @@ fun CoachDetailScreen(
     var discountCoupon by remember { mutableStateOf("") }
     var couponApplied by remember { mutableStateOf(false) }
     var finalPrice by remember { mutableStateOf(coach.sessionPrice) }
+    var selectedGround by remember { mutableStateOf<CricketGround?>(null) }
 
     Box(
         modifier = Modifier
@@ -98,13 +104,26 @@ fun CoachDetailScreen(
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Spacer(modifier = Modifier.height(40.dp))
-                    CoachAvatarIllustration(
-                        modifier = Modifier
-                            .size(90.dp)
-                            .shadow(8.dp, CircleShape),
-                        coachName = coach.name,
-                        primaryColor = SportColors.ActiveBlue
-                    )
+                    if (coach.imageUrl.isNotEmpty()) {
+                        AsyncImage(
+                            model = coach.imageUrl,
+                            contentDescription = coach.name,
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier
+                                .size(90.dp)
+                                .shadow(8.dp, CircleShape)
+                                .clip(CircleShape)
+                                .border(2.dp, Color.White, CircleShape)
+                        )
+                    } else {
+                        CoachAvatarIllustration(
+                            modifier = Modifier
+                                .size(90.dp)
+                                .shadow(8.dp, CircleShape),
+                            coachName = coach.name,
+                            primaryColor = SportColors.ActiveBlue
+                        )
+                    }
                 }
             }
 
@@ -305,6 +324,225 @@ fun CoachDetailScreen(
                     }
                 }
 
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Nearby Verified Cricket Grounds Selection Option
+                Text(
+                    text = "Select Practice Ground (Verified)",
+                    color = SportColors.TextPrimary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Pick a nearby verified turf/stadium for your session:",
+                    color = SportColors.TextSecondary,
+                    fontSize = 11.sp,
+                    modifier = Modifier.padding(bottom = 12.dp)
+                )
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(14.dp),
+                    contentPadding = PaddingValues(horizontal = 2.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(verifiedCricketGrounds) { ground ->
+                        val isSelected = selectedGround?.id == ground.id
+                        Box(
+                            modifier = Modifier
+                                .width(190.dp)
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(SportColors.SoftCardBg)
+                                .border(
+                                    width = if (isSelected) 3.dp else 1.dp,
+                                    color = if (isSelected) Color(0xFF10B981) else SportColors.CardBorder,
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .clickable {
+                                    selectedGround = if (isSelected) null else ground
+                                }
+                        ) {
+                            Column {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(100.dp)
+                                ) {
+                                    AsyncImage(
+                                        model = ground.imageUrl,
+                                        contentDescription = ground.name,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                    // Verified Badge on top of Image
+                                    Row(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(6.dp)
+                                            .background(Color(0xFF10B981), RoundedCornerShape(6.dp))
+                                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Verified,
+                                            contentDescription = null,
+                                            tint = Color.White,
+                                            modifier = Modifier.size(10.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(2.dp))
+                                        Text(
+                                            "Verified",
+                                            color = Color.White,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+
+                                    // Selection Overlay Indicator
+                                    if (isSelected) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .background(Color(0xFF10B981).copy(alpha = 0.25f)),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Row(
+                                                modifier = Modifier
+                                                    .background(Color(0xFF10B981), RoundedCornerShape(8.dp))
+                                                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.CheckCircle,
+                                                    contentDescription = null,
+                                                    tint = Color.White,
+                                                    modifier = Modifier.size(12.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(4.dp))
+                                                Text(
+                                                    "SELECTED",
+                                                    color = Color.White,
+                                                    fontSize = 9.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(10.dp)
+                                ) {
+                                    Text(
+                                        text = ground.name,
+                                        color = SportColors.TextPrimary,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.LocationOn,
+                                            contentDescription = null,
+                                            tint = SportColors.ActiveBlue,
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(3.dp))
+                                        Text(
+                                            text = ground.distance,
+                                            color = SportColors.TextSecondary,
+                                            fontSize = 11.sp
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = "₹${ground.ratePerHour.toInt()}/hr",
+                                            color = SportColors.GoldYellow,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Black
+                                        )
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.Star,
+                                                contentDescription = null,
+                                                tint = SportColors.GoldYellow,
+                                                modifier = Modifier.size(11.dp)
+                                            )
+                                            Text(
+                                                text = " ${ground.rating}",
+                                                color = SportColors.TextPrimary,
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Detail verification showing selected ground status
+                AnimatedVisibility(
+                    visible = selectedGround != null,
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
+                ) {
+                    selectedGround?.let { gnd ->
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 4.dp),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color(0xFF10B981).copy(alpha = 0.08f)
+                            ),
+                            border = BorderStroke(1.dp, Color(0xFF10B981).copy(alpha = 0.3f))
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CheckCircle,
+                                    contentDescription = "Selected ground icon",
+                                    tint = Color(0xFF10B981),
+                                    modifier = Modifier.size(20.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(
+                                        text = "Selected Venue Ground Added!",
+                                        color = Color(0xFF10B981),
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "${gnd.name} • ${gnd.distance} • ₹${gnd.ratePerHour.toInt()}/hr",
+                                        color = SportColors.TextPrimary,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
                 Spacer(modifier = Modifier.height(24.dp))
 
                 // Rate details and Checkout CTA
@@ -328,9 +566,8 @@ fun CoachDetailScreen(
                             fontWeight = FontWeight.Black
                         )
                     }
-                    Button(
+                    GradientButton(
                         onClick = { checkoutStep = true },
-                        colors = ButtonDefaults.buttonColors(containerColor = SportColors.SportGreen),
                         modifier = Modifier
                             .height(48.dp)
                             .width(180.dp),
@@ -459,6 +696,12 @@ fun CoachDetailScreen(
                             Text("Base session fare", color = SportColors.TextSecondary, fontSize = 12.sp)
                             Text("₹${coach.sessionPrice}", color = SportColors.TextPrimary, fontSize = 12.sp)
                         }
+                        if (selectedGround != null) {
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                                Text("Ground rental fee (${selectedGround!!.name})", color = SportColors.TextSecondary, fontSize = 12.sp)
+                                Text("₹${selectedGround!!.ratePerHour}", color = SportColors.TextPrimary, fontSize = 12.sp)
+                            }
+                        }
                         if (couponApplied) {
                             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                 Text("Discount Deduction", color = SportColors.SportGreen, fontSize = 12.sp)
@@ -478,23 +721,30 @@ fun CoachDetailScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text("TOTAL AMOUNT DUE", color = SportColors.TextPrimary, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                            Text("₹${finalPrice + 35.0}", color = SportColors.GoldYellow, fontWeight = FontWeight.Black, fontSize = 18.sp)
+                            val groundPrice = selectedGround?.ratePerHour ?: 0.0
+                            Text("₹${finalPrice + groundPrice + 35.0}", color = SportColors.GoldYellow, fontWeight = FontWeight.Black, fontSize = 18.sp)
                         }
 
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Complete Booking Action
-                        Button(
+                        GradientButton(
                             onClick = {
-                                viewModel.bookSession(coach, selectedDate, selectedSlot)
+                                val notesText = if (selectedGround != null) {
+                                    "Venue reserved: ${selectedGround?.name} (${selectedGround?.distance}). Price: ₹${selectedGround?.ratePerHour?.toInt()}/hr. " +
+                                            "Practice focus: ${viewModel.userProfile.value.preferredSkills}."
+                                } else {
+                                    "Practice focus: ${viewModel.userProfile.value.preferredSkills}. Bring sports safety guards."
+                                }
+                                viewModel.bookSession(coach, selectedDate, selectedSlot, notesText)
                                 checkoutStep = false
                                 onBookingSuccess()
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(50.dp)
-                                .testTag("submit_button"),
-                            colors = ButtonDefaults.buttonColors(containerColor = SportColors.SportGreen)
+                                .height(50.dp),
+                            testTag = "submit_button",
+                            shape = RoundedCornerShape(12.dp)
                         ) {
                             Text("Pay and Reserve Instant 🛡️", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                         }
@@ -506,3 +756,47 @@ fun CoachDetailScreen(
         }
     }
 }
+
+data class CricketGround(
+    val id: String,
+    val name: String,
+    val imageUrl: String,
+    val distance: String,
+    val ratePerHour: Double,
+    val rating: Float
+)
+
+val verifiedCricketGrounds = listOf(
+    CricketGround(
+        id = "ground_1",
+        name = "Shivaji Park Turf",
+        imageUrl = "https://images.unsplash.com/photo-1540747737956-378724044492?auto=format&fit=crop&q=80&w=400",
+        distance = "1.2 km away",
+        ratePerHour = 400.0,
+        rating = 4.8f
+    ),
+    CricketGround(
+        id = "ground_2",
+        name = "MCA Academy Ground",
+        imageUrl = "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=400",
+        distance = "2.8 km away",
+        ratePerHour = 750.0,
+        rating = 4.9f
+    ),
+    CricketGround(
+        id = "ground_3",
+        name = "Wankhede Practice Turf",
+        imageUrl = "https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?auto=format&fit=crop&q=80&w=400",
+        distance = "3.5 km away",
+        ratePerHour = 650.0,
+        rating = 4.7f
+    ),
+    CricketGround(
+        id = "ground_4",
+        name = "CCI Brabourne Nets",
+        imageUrl = "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400",
+        distance = "5.0 km away",
+        ratePerHour = 500.0,
+        rating = 4.6f
+    )
+)

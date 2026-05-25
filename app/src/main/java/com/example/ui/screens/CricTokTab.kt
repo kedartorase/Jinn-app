@@ -368,16 +368,16 @@ fun CricTokTab(viewModel: CricketViewModel) {
                         ) {
                             Text(
                                 "Video Discussion (${mockCommentsList.size})",
-                                color = Color.White,
+                                color = SportColors.TextPrimary,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             IconButton(onClick = { showCommentsForClip = null }) {
-                                Icon(Icons.Default.Close, contentDescription = "Close", tint = Color.White)
+                                Icon(Icons.Default.Close, contentDescription = "Close", tint = SportColors.TextPrimary)
                             }
                         }
 
-                        Divider(color = Color.White.copy(alpha = 0.1f), modifier = Modifier.padding(vertical = 8.dp))
+                        HorizontalDivider(color = SportColors.CardBorder, modifier = Modifier.padding(vertical = 8.dp))
 
                         // Scrollable list
                         Column(
@@ -395,19 +395,19 @@ fun CricTokTab(viewModel: CricketViewModel) {
                                         modifier = Modifier
                                             .size(24.dp)
                                             .clip(CircleShape)
-                                            .background(Color.White.copy(alpha = 0.1f)),
+                                            .background(SportColors.DarkBackground),
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Icon(Icons.Default.Person, contentDescription = null, tint = Color.White, modifier = Modifier.size(12.dp))
+                                        Icon(Icons.Default.Person, contentDescription = null, tint = SportColors.TextSecondary, modifier = Modifier.size(12.dp))
                                     }
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(8.dp))
-                                            .background(Color.White.copy(alpha = 0.05f))
+                                            .background(SportColors.DarkBackground)
                                             .padding(10.dp)
                                     ) {
-                                        Text(comment, color = Color.White, fontSize = 11.sp)
+                                        Text(comment, color = SportColors.TextPrimary, fontSize = 11.sp)
                                     }
                                 }
                             }
@@ -424,12 +424,15 @@ fun CricTokTab(viewModel: CricketViewModel) {
                             OutlinedTextField(
                                 value = mockCommentText,
                                 onValueChange = { mockCommentText = it },
-                                placeholder = { Text("Write a response...", fontSize = 11.sp) },
+                                placeholder = { Text("Write a response...", fontSize = 11.sp, color = SportColors.TextSecondary) },
                                 modifier = Modifier.weight(1f),
                                 colors = OutlinedTextFieldDefaults.colors(
-                                    focusedTextColor = Color.White,
-                                    unfocusedTextColor = Color.White,
-                                    focusedBorderColor = SportColors.GlowBlueAccent
+                                    focusedTextColor = SportColors.TextPrimary,
+                                    unfocusedTextColor = SportColors.TextPrimary,
+                                    focusedBorderColor = SportColors.ActiveBlue,
+                                    unfocusedBorderColor = SportColors.CardBorder,
+                                    focusedContainerColor = SportColors.DarkBackground,
+                                    unfocusedContainerColor = SportColors.DarkBackground
                                 ),
                                 singleLine = true
                             )
