@@ -304,7 +304,6 @@ fun JinnAppLogo(
                 .size(160.dp)
                 .clip(RoundedCornerShape(28.dp))
                 .background(SportColors.PrimaryGradient)
-                .border(2.5.dp, Color(0xFF2D46CD), RoundedCornerShape(28.dp))
                 .padding(4.dp),
             contentAlignment = Alignment.Center
         ) {

@@ -123,7 +123,7 @@ fun LoginScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            UserRole.values().forEach { role ->
+                            UserRole.values().filter { it != UserRole.PLAYER }.forEach { role ->
                                 val isSelected = selectedRole == role
                                 Box(
                                     modifier = Modifier

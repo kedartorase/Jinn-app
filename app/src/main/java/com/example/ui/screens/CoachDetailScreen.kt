@@ -235,6 +235,176 @@ fun CoachDetailScreen(
 
                 Spacer(modifier = Modifier.height(20.dp))
 
+                // Coaching Videos Section
+                Text(
+                    text = "Coaching & Demonstration Videos 🎥",
+                    color = SportColors.TextPrimary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Watch training drills, mechanic lessons, and game plans uploaded by Coach ${coach.name.split(" ").first()}:",
+                    color = SportColors.TextSecondary,
+                    fontSize = 11.sp,
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
+
+                // List of realistic curated videos per coach
+                val coachSpecificVideos = remember(coach.id) {
+                    when (coach.id) {
+                        "coach_gautam" -> listOf(
+                            "T20 Opening Strike Rotation Tactics" to "04:12",
+                            "Confronting Left-Arm Offspin Drills" to "06:30",
+                            "Powerplay Field Infiltration Masterclass" to "08:15"
+                        )
+                        "coach_rahul" -> listOf(
+                            "The Ultimate Defensive Bat Grip & Balance" to "12:05",
+                            "Leaving the Outswinging Leather Ball" to "09:40",
+                            "Patience & High-Concentration Building Drills" to "15:20"
+                        )
+                        "coach_ravi" -> listOf(
+                            "How to Dominate Bowlers from Ball 1" to "05:10",
+                            "The Art of Launching Over mid-on" to "03:45",
+                            "Aggressive Team Huddles & Mental Tactics" to "07:50"
+                        )
+                        else -> listOf(
+                            "Specialist Cricket Warm-Up Exercises" to "05:00",
+                            "Optimal Bat Speed Swing Coordination" to "04:15",
+                            "Footwork Coordination Cone Drills" to "03:30"
+                        )
+                    }
+                }
+
+                LazyRow(
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(coachSpecificVideos) { (title, duration) ->
+                        var isPlaying by remember { mutableStateOf(false) }
+                        
+                        Card(
+                            modifier = Modifier
+                                .width(180.dp)
+                                .clickable { isPlaying = true },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg),
+                            border = BorderStroke(1.dp, SportColors.CardBorder)
+                        ) {
+                            Column {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(100.dp)
+                                        .background(Color(0xFF0F172A)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Icon(
+                                            imageVector = Icons.Default.PlayArrow,
+                                            contentDescription = "Play Video",
+                                            tint = SportColors.SportGreen,
+                                            modifier = Modifier.size(36.dp)
+                                        )
+                                        Text(
+                                            text = duration,
+                                            color = Color.White.copy(alpha = 0.6f),
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                                
+                                Column(modifier = Modifier.padding(8.dp)) {
+                                    Text(
+                                        text = title,
+                                        color = SportColors.TextPrimary,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 2,
+                                        overflow = TextOverflow.Ellipsis,
+                                        lineHeight = 14.sp
+                                    )
+                                }
+                            }
+                        }
+
+                        if (isPlaying) {
+                            AlertDialog(
+                                onDismissRequest = { isPlaying = false },
+                                title = {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Playing: ${coach.name.split(" ").first()}'s Masterclass",
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = SportColors.ActiveBlue
+                                        )
+                                        IconButton(
+                                            onClick = { isPlaying = false },
+                                            modifier = Modifier.size(24.dp)
+                                        ) {
+                                            Icon(Icons.Default.Close, contentDescription = "Close Player", modifier = Modifier.size(16.dp))
+                                        }
+                                    }
+                                },
+                                text = {
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(140.dp)
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .background(Color.Black),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator(
+                                                color = SportColors.SportGreen,
+                                                modifier = Modifier.size(24.dp),
+                                                strokeWidth = 2.dp
+                                            )
+                                            Text(
+                                                text = "Streaming: $title...",
+                                                color = Color.White,
+                                                fontSize = 11.sp,
+                                                modifier = Modifier.padding(top = 40.dp),
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                        
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.Center,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(Icons.Default.VolumeUp, contentDescription = "", tint = SportColors.TextSecondary, modifier = Modifier.size(16.dp))
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text("Audio streaming at high definition 1080p", color = SportColors.TextSecondary, fontSize = 10.sp)
+                                        }
+                                    }
+                                },
+                                confirmButton = {
+                                    TextButton(onClick = { isPlaying = false }) {
+                                        Text("Done Watching", fontWeight = FontWeight.Bold, color = SportColors.ActiveBlue)
+                                    }
+                                },
+                                containerColor = Color.White,
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
                 // Scheduling System
                 Text(
                     text = "Book Practice Match Slot",

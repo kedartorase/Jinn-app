@@ -272,7 +272,7 @@ fun CoachDashboardScreen(
                     // Tab 3: Availability & Rates
                     IconButtonWithText(
                         icon = Icons.Default.Timer,
-                        label = "Schedule and rate setting",
+                        label = "Timing & Rates",
                         isSelected = currentCoachTab == CoachTab.AVAILABILITY,
                         onClick = { currentCoachTab = CoachTab.AVAILABILITY }
                     )
@@ -1107,28 +1107,28 @@ fun CoachBookingsManager(
         AlertDialog(
             onDismissRequest = { selectedBookingForDetail = null },
             title = {
-                Text("Booking Detail: #${b.id.takeLast(6)}", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                Text("Booking Detail: #${b.id.takeLast(6)}", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
             },
             text = {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Student Athlete:", color = SportColors.TextSecondary, fontSize = 12.sp)
+                        Text("Student Athlete:", color = Color(0xFFCBD5E1), fontSize = 12.sp)
                         Text(b.studentName, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 12.sp)
                     }
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Scheduled Date:", color = SportColors.TextSecondary, fontSize = 12.sp)
+                        Text("Scheduled Date:", color = Color(0xFFCBD5E1), fontSize = 12.sp)
                         Text(b.date, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 12.sp)
                     }
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Time Duration:", color = SportColors.TextSecondary, fontSize = 12.sp)
+                        Text("Time Duration:", color = Color(0xFFCBD5E1), fontSize = 12.sp)
                         Text(b.timeSlot, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 12.sp)
                     }
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Session Price:", color = SportColors.TextSecondary, fontSize = 12.sp)
+                        Text("Session Price:", color = Color(0xFFCBD5E1), fontSize = 12.sp)
                         Text("₹${b.price}", fontWeight = FontWeight.Bold, color = SportColors.GoldYellow, fontSize = 12.sp)
                     }
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Text("Booking Status:", color = SportColors.TextSecondary, fontSize = 12.sp)
+                        Text("Booking Status:", color = Color(0xFFCBD5E1), fontSize = 12.sp)
                         Text(b.status, fontWeight = FontWeight.Bold, color = if (b.status == "Upcoming") SportColors.SportGreen else SportColors.BrightOrange, fontSize = 12.sp)
                     }
 
@@ -1136,7 +1136,7 @@ fun CoachBookingsManager(
                     Text("Strap Session Notes:", fontWeight = FontWeight.Bold, color = Color.White, fontSize = 11.sp)
                     Text(
                         text = b.sessionNotes.ifEmpty { "None provided by athlete." },
-                        color = SportColors.TextSecondary,
+                        color = Color(0xFFE2E8F0),
                         fontSize = 11.sp,
                         lineHeight = 14.sp
                     )
@@ -1146,12 +1146,12 @@ fun CoachBookingsManager(
                         Text("Submitted Feedback Advice:", fontWeight = FontWeight.Bold, color = SportColors.SportGreen, fontSize = 11.sp)
                         Text(
                             text = b.feedbackReport,
-                            color = SportColors.TextSecondary,
+                            color = Color(0xFFCBD5E1),
                             fontSize = 11.sp,
                             lineHeight = 14.sp
                         )
                         Row(modifier = Modifier.padding(top = 4.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text("Evaluation Grade: ", color = SportColors.TextSecondary, fontSize = 11.sp)
+                            Text("Evaluation Grade: ", color = Color(0xFFCBD5E1), fontSize = 11.sp)
                             Badge(containerColor = SportColors.ActiveBlue) {
                                 Text(b.feedbackGrade, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 9.sp, modifier = Modifier.padding(horizontal = 4.dp))
                             }
@@ -1161,7 +1161,7 @@ fun CoachBookingsManager(
             },
             confirmButton = {
                 TextButton(onClick = { selectedBookingForDetail = null }) {
-                    Text("Close", color = SportColors.ActiveBlue)
+                    Text("Close", color = Color(0xFF38BDF8))
                 }
             },
             containerColor = Color(0xFF1E293B)
@@ -1181,7 +1181,7 @@ fun CoachBookingsManager(
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     Text(
                         text = "You are rejecting the slot requested by ${b.studentName} on ${b.date} (${b.timeSlot}).",
-                        color = SportColors.TextSecondary,
+                        color = Color(0xFFCBD5E1),
                         fontSize = 12.sp
                     )
                     Text(
@@ -1249,7 +1249,7 @@ fun CoachBookingsManager(
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     Text(
                         text = "Student Name: ${b.studentName}\nCompleted Date: ${b.date}",
-                        color = SportColors.TextSecondary,
+                        color = Color(0xFFCBD5E1),
                         fontSize = 11.sp
                     )
 
@@ -1257,11 +1257,11 @@ fun CoachBookingsManager(
                         value = feedbackComment,
                         onValueChange = { feedbackComment = it },
                         modifier = Modifier.fillMaxWidth().height(100.dp),
-                        label = { Text("Performance Advice / Feedback") },
-                        placeholder = { Text("Excellent stance balance. Focus next on high bat-lift control and footwork trigger...") },
+                        label = { Text("Performance Advice / Feedback", color = Color(0xFFCBD5E1)) },
+                        placeholder = { Text("Excellent stance balance. Focus next on high bat-lift control and footwork trigger...", color = Color(0xFF94A3B8)) },
                         colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = SportColors.ActiveBlue,
-                            unfocusedBorderColor = SportColors.CardBorder,
+                            focusedBorderColor = Color(0xFF38BDF8),
+                            unfocusedBorderColor = Color(0xFF475569),
                             focusedTextColor = Color.White,
                             unfocusedTextColor = Color.White
                         )
@@ -1278,12 +1278,17 @@ fun CoachBookingsManager(
                             Box(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(8.dp))
-                                    .background(if (isSel) SportColors.ActiveBlue else SportColors.DarkBackground)
-                                    .border(1.dp, if (isSel) Color.White else SportColors.CardBorder, RoundedCornerShape(8.dp))
+                                    .background(if (isSel) Color(0xFF38BDF8) else Color(0xFF334155))
+                                    .border(1.dp, if (isSel) Color.White else Color(0xFF475569), RoundedCornerShape(8.dp))
                                     .clickable { selectedGrade = grade }
                                     .padding(horizontal = 10.dp, vertical = 6.dp)
                             ) {
-                                Text(grade, color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                Text(
+                                    text = grade,
+                                    color = if (isSel) Color.White else Color(0xFFCBD5E1),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
                     }
