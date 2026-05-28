@@ -1110,7 +1110,10 @@ fun CoachBookingsManager(
                 Text("Booking Detail: #${b.id.takeLast(6)}", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Student Athlete:", color = Color(0xFFCBD5E1), fontSize = 12.sp)
                         Text(b.studentName, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 12.sp)
@@ -1178,7 +1181,10 @@ fun CoachBookingsManager(
                 Text("Cancel Session & Initiate Refund?", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
                     Text(
                         text = "You are rejecting the slot requested by ${b.studentName} on ${b.date} (${b.timeSlot}).",
                         color = Color(0xFFCBD5E1),
@@ -1246,7 +1252,10 @@ fun CoachBookingsManager(
                 Text("Submit Session Evaluation & Feedback", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = Color.White)
             },
             text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Column(
+                    modifier = Modifier.verticalScroll(rememberScrollState()),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
                     Text(
                         text = "Student Name: ${b.studentName}\nCompleted Date: ${b.date}",
                         color = Color(0xFFCBD5E1),
@@ -2061,6 +2070,7 @@ fun CoachProfileManager(viewModel: CricketViewModel) {
 
     var showAddVideoDialog by remember { mutableStateOf(false) }
     var inputVideoTitle by remember { mutableStateOf("") }
+    var activePlayingVideoTitle by remember { mutableStateOf<String?>(null) }
 
     var showAddCertDialog by remember { mutableStateOf(false) }
     var inputCertName by remember { mutableStateOf("") }
@@ -2418,7 +2428,9 @@ fun CoachProfileManager(viewModel: CricketViewModel) {
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         videos.forEach { video ->
                             Card(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable { activePlayingVideoTitle = video },
                                 colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg),
                                 shape = RoundedCornerShape(10.dp),
                                 border = BorderStroke(1.dp, SportColors.CardBorder)
@@ -2712,6 +2724,79 @@ fun CoachProfileManager(viewModel: CricketViewModel) {
                 }
             },
             containerColor = Color.White
+        )
+    }
+
+    activePlayingVideoTitle?.let { title ->
+        AlertDialog(
+            onDismissRequest = { activePlayingVideoTitle = null },
+            title = {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Playing: Your Coaching Masterclass",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = SportColors.ActiveBlue
+                    )
+                    IconButton(
+                        onClick = { activePlayingVideoTitle = null },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Close Player", modifier = Modifier.size(16.dp))
+                    }
+                }
+            },
+            text = {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(140.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(Color.Black),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = SportColors.SportGreen,
+                            modifier = Modifier.size(24.dp),
+                            strokeWidth = 2.dp
+                        )
+                        Text(
+                            text = "Streaming: $title...",
+                            color = Color.White,
+                            fontSize = 11.sp,
+                            modifier = Modifier.padding(top = 40.dp),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    
+                    Spacer(modifier = Modifier.height(10.dp))
+                    
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.VolumeUp, contentDescription = "", tint = SportColors.TextSecondary, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("HD 1080p previewing active", color = SportColors.TextSecondary, fontSize = 10.sp)
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { activePlayingVideoTitle = null }) {
+                    Text("Done", fontWeight = FontWeight.Bold, color = SportColors.ActiveBlue)
+                }
+            },
+            containerColor = Color.White,
+            shape = RoundedCornerShape(16.dp)
         )
     }
 }

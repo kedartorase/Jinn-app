@@ -171,38 +171,122 @@ fun CoachDetailScreen(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                        .padding(vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Icon(Icons.Default.Star, contentDescription = null, tint = SportColors.GoldYellow, modifier = Modifier.size(16.dp))
-                    Text(" ${coach.rating} (${coach.reviewsCount} reviews)", color = SportColors.TextPrimary, fontSize = 13.sp)
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Icon(Icons.Default.Work, contentDescription = null, tint = SportColors.GlowBlueAccent, modifier = Modifier.size(16.dp))
-                    Text(" ${coach.experienceYears} Years Exp", color = SportColors.TextPrimary, fontSize = 13.sp)
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .shadow(1.dp, RoundedCornerShape(12.dp)),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg),
+                        border = BorderStroke(1.dp, SportColors.CardBorder)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Star,
+                                contentDescription = null,
+                                tint = SportColors.GoldYellow,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "${coach.rating} Rating",
+                                color = SportColors.TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "${coach.reviewsCount} Reviews",
+                                color = SportColors.TextSecondary,
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
+
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .shadow(1.dp, RoundedCornerShape(12.dp)),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg),
+                        border = BorderStroke(1.dp, SportColors.CardBorder)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.WorkspacePremium,
+                                contentDescription = null,
+                                tint = SportColors.GlowBlueAccent,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "${coach.experienceYears} Years",
+                                color = SportColors.TextPrimary,
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = "Experience",
+                                color = SportColors.TextSecondary,
+                                fontSize = 10.sp
+                            )
+                        }
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                // Bio
-                Text(
-                    text = "Specialist Bio",
-                    color = SportColors.TextPrimary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = coach.bio,
-                    color = SportColors.TextSecondary,
-                    fontSize = 12.sp,
-                    lineHeight = 18.sp,
-                    modifier = Modifier.padding(top = 4.dp, bottom = 16.dp)
-                )
+                // Bio Card
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp)
+                        .shadow(2.dp, RoundedCornerShape(16.dp)),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg),
+                    border = BorderStroke(1.dp, SportColors.CardBorder)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .width(4.dp)
+                                    .height(16.dp)
+                                    .background(SportColors.GlowBlueAccent, RoundedCornerShape(2.dp))
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Specialist Bio",
+                                color = SportColors.TextPrimary,
+                                fontSize = 15.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = coach.bio,
+                            color = SportColors.TextSecondary,
+                            fontSize = 12.sp,
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Certifications list block
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .shadow(2.dp, RoundedCornerShape(14.dp)),
+                    shape = RoundedCornerShape(14.dp),
                     colors = CardDefaults.cardColors(containerColor = SportColors.SoftCardBg),
                     border = BorderStroke(1.dp, SportColors.CardBorder)
                 ) {
@@ -210,24 +294,32 @@ fun CoachDetailScreen(
                         modifier = Modifier.padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.WorkspacePremium,
-                            contentDescription = null,
-                            tint = SportColors.GoldYellow,
-                            modifier = Modifier.size(28.dp)
-                        )
-                        Spacer(modifier = Modifier.width(10.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(SportColors.GoldYellow.copy(alpha = 0.12f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.WorkspacePremium,
+                                contentDescription = null,
+                                tint = SportColors.GoldYellow,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
                         Column {
                             Text(
                                 "Certifications & Credentials",
                                 color = SportColors.TextPrimary,
-                                fontSize = 12.sp,
+                                fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
                                 coach.certifications,
                                 color = SportColors.TextSecondary,
-                                fontSize = 11.sp
+                                fontSize = 11.sp,
+                                lineHeight = 14.sp
                             )
                         }
                     }
@@ -422,35 +514,47 @@ fun CoachDetailScreen(
                 // Dates horizontal chips list
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     dateOptions.forEach { date ->
                         val isSelected = selectedDate == date
+                        val (dayLabel, dayNum) = when (date) {
+                            "2026-05-24" -> "Sun" to "24"
+                            "2026-05-25" -> "Mon" to "25"
+                            "2026-05-26" -> "Tue" to "26"
+                            "2026-05-27" -> "Wed" to "27"
+                            else -> "May" to date.substring(8)
+                        }
+                        
                         Box(
                             modifier = Modifier
                                 .weight(1f)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(if (isSelected) SportColors.ActiveBlue else SportColors.SoftCardBg)
+                                .shadow(if (isSelected) 4.dp else 1.dp, RoundedCornerShape(12.dp))
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(if (isSelected) SportColors.GlowBlueAccent else SportColors.SoftCardBg)
                                 .border(
                                     width = 1.dp,
                                     color = if (isSelected) Color.Transparent else SportColors.CardBorder,
-                                    shape = RoundedCornerShape(10.dp)
+                                    shape = RoundedCornerShape(12.dp)
                                 )
                                 .clickable { selectedDate = date }
-                                .padding(vertical = 8.dp),
+                                .padding(vertical = 12.dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Text(
-                                    text = date.substring(8), // just Day
-                                    color = if (isSelected) Color.White else SportColors.TextPrimary,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold
+                                    text = dayLabel.uppercase(),
+                                    color = if (isSelected) Color.White.copy(alpha = 0.8f) else SportColors.TextSecondary,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    letterSpacing = 0.5.sp
                                 )
+                                Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = "May",
-                                    color = if (isSelected) Color.White.copy(alpha = 0.7f) else SportColors.TextSecondary,
-                                    fontSize = 10.sp
+                                    text = dayNum,
+                                    color = if (isSelected) Color.White else SportColors.TextPrimary,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Black
                                 )
                             }
                         }
@@ -461,35 +565,48 @@ fun CoachDetailScreen(
 
                 // Slots matrix list selector
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     slotOptions.chunked(2).forEach { rowSlots ->
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             rowSlots.forEach { slot ->
                                 val isSelected = selectedSlot == slot
                                 Box(
                                     modifier = Modifier
                                         .weight(1f)
-                                        .height(40.dp)
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(if (isSelected) SportColors.ActiveBlue else SportColors.SoftCardBg)
+                                        .height(44.dp)
+                                        .shadow(if (isSelected) 3.dp else 0.5.dp, RoundedCornerShape(10.dp))
+                                        .clip(RoundedCornerShape(10.dp))
+                                        .background(if (isSelected) SportColors.GlowBlueAccent else SportColors.SoftCardBg)
                                         .clickable { selectedSlot = slot }
                                         .border(
                                             1.dp,
                                             if (isSelected) Color.Transparent else SportColors.CardBorder,
-                                            RoundedCornerShape(8.dp)
+                                            RoundedCornerShape(10.dp)
                                         ),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    Text(
-                                        text = slot,
-                                        color = if (isSelected) Color.White else SportColors.TextPrimary,
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Bold
-                                    )
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.Center
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Schedule,
+                                            contentDescription = null,
+                                            tint = if (isSelected) Color.White else SportColors.GlowBlueAccent,
+                                            modifier = Modifier.size(14.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = slot,
+                                            color = if (isSelected) Color.White else SportColors.TextPrimary,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -522,10 +639,11 @@ fun CoachDetailScreen(
                         Box(
                             modifier = Modifier
                                 .width(190.dp)
+                                .shadow(if (isSelected) 6.dp else 2.dp, RoundedCornerShape(16.dp))
                                 .clip(RoundedCornerShape(16.dp))
                                 .background(SportColors.SoftCardBg)
                                 .border(
-                                    width = if (isSelected) 3.dp else 1.dp,
+                                    width = if (isSelected) 2.dp else 1.dp,
                                     color = if (isSelected) Color(0xFF10B981) else SportColors.CardBorder,
                                     shape = RoundedCornerShape(16.dp)
                                 )

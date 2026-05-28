@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -302,19 +303,18 @@ fun JinnAppLogo(
         Box(
             modifier = Modifier
                 .size(160.dp)
-                .clip(RoundedCornerShape(28.dp))
-                .background(SportColors.PrimaryGradient)
-                .padding(4.dp),
+                .clip(RoundedCornerShape(28.dp)),
             contentAlignment = Alignment.Center
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_jinn_logo),
                 contentDescription = "JINN Logo",
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .scale(1.06f),
                 contentScale = ContentScale.Crop
             )
         }
-        // No extra text is needed since ic_jinn_logo already includes the high-quality styled cyan 'JINN' wordmark inside it!
     }
 }
 
