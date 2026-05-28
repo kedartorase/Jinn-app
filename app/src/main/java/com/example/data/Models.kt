@@ -117,3 +117,15 @@ data class CricketGround(
     val ratePerHour: Double,
     val rating: Float
 )
+
+data class GroupSession(
+    val id: String,
+    val title: String,
+    val description: String,
+    val hourlyRate: Double,
+    val location: String,
+    val imageUrl: String,
+    val coachName: String,
+    val maxParticipants: Int = 15,
+    val registeredCount: Int = 2
+)

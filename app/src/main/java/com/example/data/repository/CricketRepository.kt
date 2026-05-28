@@ -256,6 +256,11 @@ class CricketRepository(context: Context) {
         bookingDao.updateBooking(booking)
     }
 
+    // Add coach profile to database
+    suspend fun insertCoach(coach: Coach) {
+        coachDao.insertCoaches(listOf(coach))
+    }
+
     // Static Nearby Players List
     val nearbyPlayers = listOf(
         PlayerMatch(

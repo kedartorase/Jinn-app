@@ -392,18 +392,19 @@ fun TabSportyHeader(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // User Avatar
+                    // User Avatar - Initial name avatar
                     Box(
                         modifier = Modifier
                             .size(44.dp)
                             .clip(CircleShape)
-                            .background(SportColors.SoftCardBg),
+                            .background(SportColors.GlowBlueAccent),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = "User Initials",
-                            tint = SportColors.GlowBlueAccent
+                        Text(
+                            text = if (userProfile.name.isNotEmpty()) userProfile.name.first().toString().uppercase() else "U",
+                            color = Color.White,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
 

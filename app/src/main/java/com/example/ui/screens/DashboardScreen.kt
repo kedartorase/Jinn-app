@@ -56,7 +56,8 @@ fun DashboardScreen(
                     MainTab.HOME -> HomeTab(
                         viewModel = viewModel,
                         onCoachClick = { coach -> viewModel.selectCoach(coach) },
-                        onGroupSessionClick = { showGroupSessionToastAlert = true }
+                        onGroupSessionClick = { showGroupSessionToastAlert = true },
+                        onLogout = onLogout
                     )
                     MainTab.BOOKINGS -> BookingsTab(viewModel = viewModel)
                     MainTab.AI_COACH -> AiAssistantTab(viewModel = viewModel)

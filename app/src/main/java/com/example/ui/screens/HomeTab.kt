@@ -33,11 +33,13 @@ import com.example.ui.viewmodel.AppMode
 import com.example.ui.viewmodel.CricketViewModel
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTab(
     viewModel: CricketViewModel,
     onCoachClick: (Coach) -> Unit,
-    onGroupSessionClick: () -> Unit
+    onGroupSessionClick: () -> Unit,
+    onLogout: () -> Unit
 ) {
     val appMode by viewModel.appMode.collectAsState()
     val userProfile by viewModel.userProfile.collectAsState()
@@ -87,15 +89,20 @@ fun HomeTab(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // User Avatar
+                        // User Avatar - Initial name avatar
                         Box(
                             modifier = Modifier
                                 .size(44.dp)
                                 .clip(CircleShape)
-                                .background(SportColors.SoftCardBg),
+                                .background(SportColors.GlowBlueAccent),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Person, contentDescription = "User Initials", tint = SportColors.GlowBlueAccent)
+                            Text(
+                                text = if (userProfile.name.isNotEmpty()) userProfile.name.first().toString().uppercase() else "U",
+                                color = Color.White,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
 
                         Spacer(modifier = Modifier.width(12.dp))
@@ -143,17 +150,35 @@ fun HomeTab(
                                 )
                             }
                         }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        // Logout button to let users switch to the Coach role easily
+                        IconButton(
+                            onClick = { onLogout() },
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(Color.White.copy(alpha = 0.15f), CircleShape)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ExitToApp,
+                                contentDescription = "Log Out",
+                                tint = Color.White,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(26.dp))
 
-                    // Title: Learn Faster with the Right Coach (whistle removed as requested)
+                    // Title: Right Coach. Learn Faster centered
                     Text(
-                        text = "Learn Faster with the Right Coach",
-                        fontSize = 26.sp,
+                        text = "Right Coach. Learn Faster",
+                        fontSize = 24.sp,
                         fontWeight = FontWeight.Bold,
                         color = Color.White,
-                        lineHeight = 32.sp
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
 
                     Spacer(modifier = Modifier.height(18.dp))
@@ -677,179 +702,6 @@ fun HomeTab(
                         }
                     }
 
-                    // Selected Service Listing Section (Interactive details below the scroller)
-                    AnimatedVisibility(
-                        visible = selectedNearbyService != null,
-                        enter = fadeIn() + expandVertically(),
-                        exit = fadeOut() + shrinkVertically()
-                    ) {
-                        selectedNearbyService?.let { service ->
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 12.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .background(Color(0xFFEDF5FF))
-                                    .border(1.2.dp, SportColors.ActiveBlue.copy(alpha = 0.15f), RoundedCornerShape(16.dp))
-                                    .padding(12.dp)
-                            ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Box(
-                                            modifier = Modifier
-                                                .size(24.dp)
-                                                .clip(CircleShape)
-                                                .background(service.iconColor.copy(alpha = 0.12f)),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Image(
-                                                painter = painterResource(id = service.iconResId),
-                                                contentDescription = service.title,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                        }
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = "Available ${service.title} (${service.countNearby})",
-                                            color = SportColors.TextPrimary,
-                                            fontSize = 13.sp,
-                                            fontWeight = FontWeight.Bold
-                                        )
-                                    }
-                                    Text(
-                                        text = "Close",
-                                        color = SportColors.TextSecondary,
-                                        fontSize = 11.sp,
-                                        modifier = Modifier
-                                            .clickable { selectedNearbyService = null }
-                                            .padding(horizontal = 4.dp, vertical = 2.dp)
-                                    )
-                                }
-
-                                Spacer(modifier = Modifier.height(10.dp))
-
-                                service.professionals.forEach { prof ->
-                                    val rateVal = try {
-                                        prof.rate.replace("₹", "").split("/").firstOrNull()?.toDoubleOrNull() ?: 150.0
-                                    } catch (e: Exception) {
-                                        150.0
-                                    }
-                                    val fakeCoach = Coach(
-                                        id = "nearby_" + service.id + "_" + prof.name.replace(" ", "_").lowercase(),
-                                        name = prof.name + " (" + service.title.removeSuffix("y").removeSuffix("s") + ")",
-                                        imageUrl = service.imageUrl,
-                                        skills = service.title + " • " + prof.specialty,
-                                        rating = prof.rating,
-                                        reviewsCount = (15..45).random(),
-                                        isVerified = prof.isVerified,
-                                        bio = "Certified professional with ${prof.experience} of dedicated field experience. Specializes in ${prof.specialty} with exceptional performance standard.",
-                                        experienceYears = prof.experience.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 8,
-                                        certifications = if (prof.isVerified) "Verified ${service.title.removeSuffix("s")} License" else "Standard Certification",
-                                        sessionPrice = rateVal,
-                                        location = prof.distance,
-                                        availableDays = "Mon, Tue, Wed, Thu, Fri, Sat, Sun"
-                                    )
-                                    Card(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(vertical = 4.dp)
-                                            .clickable {
-                                                onCoachClick(fakeCoach)
-                                            },
-                                        shape = RoundedCornerShape(12.dp),
-                                        colors = CardDefaults.cardColors(
-                                            containerColor = Color.White
-                                        ),
-                                        border = BorderStroke(1.dp, Color(0xFFF1F5F9))
-                                    ) {
-                                        Row(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(10.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            // Avatar
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(36.dp)
-                                                    .clip(CircleShape)
-                                                    .background(service.iconColor.copy(alpha = 0.1f)),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Person,
-                                                    contentDescription = null,
-                                                    tint = service.iconColor,
-                                                    modifier = Modifier.size(18.dp)
-                                                )
-                                            }
-
-                                            Spacer(modifier = Modifier.width(10.dp))
-
-                                            Column(modifier = Modifier.weight(1f)) {
-                                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                                    Text(
-                                                        text = prof.name,
-                                                        color = SportColors.TextPrimary,
-                                                        fontSize = 13.sp,
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                    if (prof.isVerified) {
-                                                        Spacer(modifier = Modifier.width(4.dp))
-                                                        Icon(
-                                                            imageVector = Icons.Default.Verified,
-                                                            contentDescription = "Verified",
-                                                            tint = Color(0xFF10B981),
-                                                            modifier = Modifier.size(12.dp)
-                                                        )
-                                                    }
-                                                }
-                                                Text(
-                                                    text = "${prof.specialty} • ${prof.experience}",
-                                                    color = SportColors.TextSecondary,
-                                                    fontSize = 11.sp
-                                                )
-                                                Text(
-                                                    text = "📍 ${prof.distance}",
-                                                    color = SportColors.GlowBlueAccent,
-                                                    fontSize = 10.sp,
-                                                    fontWeight = FontWeight.Medium
-                                                )
-                                            }
-
-                                            Column(horizontalAlignment = Alignment.End) {
-                                                Text(
-                                                    text = prof.rate,
-                                                    color = SportColors.GoldYellow,
-                                                    fontSize = 12.sp,
-                                                    fontWeight = FontWeight.Black
-                                                )
-                                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Star,
-                                                        contentDescription = null,
-                                                        tint = SportColors.GoldYellow,
-                                                        modifier = Modifier.size(10.dp)
-                                                    )
-                                                    Text(
-                                                        text = " ${prof.rating}",
-                                                        color = SportColors.TextPrimary,
-                                                        fontSize = 10.sp,
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
                     Spacer(modifier = Modifier.height(24.dp))
 
                     // Group session Near By section
@@ -1179,6 +1031,190 @@ fun HomeTab(
 
                         Spacer(modifier = Modifier.height(12.dp))
                     }
+                }
+            }
+        }
+
+        // Bottom Popup Sheet for "Find more near by" items
+        if (selectedNearbyService != null) {
+            val service = selectedNearbyService!!
+            ModalBottomSheet(
+                onDismissRequest = { selectedNearbyService = null },
+                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                containerColor = Color(0xFFEDF5FF),
+                dragHandle = { BottomSheetDefaults.DragHandle(color = SportColors.ActiveBlue) }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clip(CircleShape)
+                                    .background(service.iconColor.copy(alpha = 0.12f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                val localIcon = when (service.id) {
+                                    "net_bowlers" -> Icons.Default.SportsCricket
+                                    "commentators" -> Icons.Default.Mic
+                                    "anchors" -> Icons.Default.Person
+                                    "umpires" -> Icons.Default.Shield
+                                    "groundsmen" -> Icons.Default.Build
+                                    else -> Icons.Default.Place
+                                }
+                                Icon(
+                                    imageVector = localIcon,
+                                    contentDescription = service.title,
+                                    tint = service.iconColor,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Available ${service.title} (${service.countNearby})",
+                                color = SportColors.TextPrimary,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Text(
+                            text = "Close",
+                            color = SportColors.ActiveBlue,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier
+                                .clickable { selectedNearbyService = null }
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    service.professionals.forEach { prof ->
+                        val rateVal = try {
+                            prof.rate.replace("₹", "").split("/").firstOrNull()?.toDoubleOrNull() ?: 150.0
+                        } catch (e: Exception) {
+                            150.0
+                        }
+                        val fakeCoach = Coach(
+                            id = "nearby_" + service.id + "_" + prof.name.replace(" ", "_").lowercase(),
+                            name = prof.name + " (" + service.title.removeSuffix("y").removeSuffix("s") + ")",
+                            imageUrl = service.imageUrl,
+                            skills = service.title + " • " + prof.specialty,
+                            rating = prof.rating,
+                            reviewsCount = (15..45).random(),
+                            isVerified = prof.isVerified,
+                            bio = "Certified professional with ${prof.experience} of dedicated field experience. Specializes in ${prof.specialty} with exceptional performance standard.",
+                            experienceYears = prof.experience.replace(Regex("[^0-9]"), "").toIntOrNull() ?: 8,
+                            certifications = if (prof.isVerified) "Verified ${service.title.removeSuffix("s")} License" else "Standard Certification",
+                            sessionPrice = rateVal,
+                            location = prof.distance,
+                            availableDays = "Mon, Tue, Wed, Thu, Fri, Sat, Sun"
+                        )
+                        Card(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp)
+                                .clickable {
+                                    selectedNearbyService = null
+                                    onCoachClick(fakeCoach)
+                                },
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = Color.White
+                            ),
+                            border = BorderStroke(1.dp, Color(0xFFE2E8F0))
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Initial name avatar instead of standard user icon
+                                Box(
+                                    modifier = Modifier
+                                        .size(40.dp)
+                                        .clip(CircleShape)
+                                        .background(service.iconColor.copy(alpha = 0.12f)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = if (prof.name.isNotEmpty()) prof.name.first().toString() else "P",
+                                        color = service.iconColor,
+                                        fontSize = 15.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.width(12.dp))
+
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Text(
+                                            text = prof.name,
+                                            color = SportColors.TextPrimary,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        if (prof.isVerified) {
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Icon(
+                                                imageVector = Icons.Default.Verified,
+                                                contentDescription = "Verified",
+                                                tint = Color(0xFF10B981),
+                                                modifier = Modifier.size(13.dp)
+                                            )
+                                        }
+                                    }
+                                    Text(
+                                        text = "${prof.specialty} • ${prof.experience}",
+                                        color = SportColors.TextSecondary,
+                                        fontSize = 12.sp
+                                    )
+                                    Text(
+                                        text = "📍 ${prof.distance}",
+                                        color = SportColors.GlowBlueAccent,
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Medium
+                                    )
+                                }
+
+                                Column(horizontalAlignment = Alignment.End) {
+                                    Text(
+                                        text = prof.rate,
+                                        color = SportColors.GoldYellow,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Black
+                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Default.Star,
+                                            contentDescription = null,
+                                            tint = SportColors.GoldYellow,
+                                            modifier = Modifier.size(11.dp)
+                                        )
+                                        Text(
+                                            text = " ${prof.rating}",
+                                            color = SportColors.TextPrimary,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
                 }
             }
         }

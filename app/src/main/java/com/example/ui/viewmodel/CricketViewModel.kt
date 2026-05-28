@@ -410,8 +410,167 @@ class CricketViewModel(application: Application) : AndroidViewModel(application)
                 location = location,
                 availableDays = availableDays
             )
-            repository.coachDao.insertCoaches(listOf(newCoach))
+            repository.insertCoach(newCoach)
         }
+    }
+
+    // --- Dynamic Coaching Rates ---
+    private val _coachHourlyRate = MutableStateFlow(800.0)
+    val coachHourlyRate = _coachHourlyRate.asStateFlow()
+
+    private val _coachWeeklyRate = MutableStateFlow(4500.0)
+    val coachWeeklyRate = _coachWeeklyRate.asStateFlow()
+
+    private val _coachMonthlyRate = MutableStateFlow(15000.0)
+    val coachMonthlyRate = _coachMonthlyRate.asStateFlow()
+
+    fun updateCoachRates(hourly: Double, weekly: Double, monthly: Double) {
+        _coachHourlyRate.value = hourly
+        _coachWeeklyRate.value = weekly
+        _coachMonthlyRate.value = monthly
+    }
+
+    // --- Dynamic Group Sessions ---
+    private val _groupSessions = MutableStateFlow<List<GroupSession>>(
+        listOf(
+            GroupSession(
+                id = "gs_1",
+                title = "Weekend Cover-Drive Masterclass",
+                description = "Master your batting stance, elbow alignment, and foot spacing trigger. Includes 1-on-1 visual review.",
+                hourlyRate = 500.0,
+                location = "Shivaji Park Turf, Dadar",
+                imageUrl = "android.resource://com.example/" + com.example.R.drawable.img_group_banner,
+                coachName = "Vikas SD"
+            ),
+            GroupSession(
+                id = "gs_2",
+                title = "Fast Bowling Seam & Swing Clinic",
+                description = "Analyze your wrist position and follow-through. Bring your cricket spikes for grass turf practice.",
+                hourlyRate = 600.0,
+                location = "MCA Academy Nets, Bandra",
+                imageUrl = "android.resource://com.example/" + com.example.R.drawable.img_cricket_nets,
+                coachName = "Prashant"
+            )
+        )
+    )
+    val groupSessions = _groupSessions.asStateFlow()
+
+    fun addGroupSession(title: String, description: String, rate: Double, location: String, imageUrl: String, coachName: String) {
+        val currentList = _groupSessions.value.toMutableList()
+        val defaultImg = if (imageUrl.isBlank()) {
+            "android.resource://com.example/" + com.example.R.drawable.img_group_banner
+        } else {
+            imageUrl
+        }
+        val newSession = GroupSession(
+            id = "gs_" + System.currentTimeMillis(),
+            title = title,
+            description = description,
+            hourlyRate = rate,
+            location = location,
+            imageUrl = defaultImg,
+            coachName = coachName,
+            maxParticipants = 15,
+            registeredCount = 2
+        )
+        currentList.add(newSession)
+        _groupSessions.value = currentList
+    }
+
+    fun removeGroupSession(id: String) {
+        val currentList = _groupSessions.value.toMutableList()
+        currentList.removeAll { it.id == id }
+        _groupSessions.value = currentList
+    }
+
+    fun bookWalkInSession(coachName: String, studentName: String, date: String, timeSlot: String, price: Double, sessionNotes: String) {
+        viewModelScope.launch {
+            val newBooking = Booking(
+                id = "b_walkin_" + System.currentTimeMillis(),
+                coachId = "coach_current",
+                coachName = coachName,
+                coachSkills = "Personal Session",
+                coachImageUrl = "android.resource://com.example/" + com.example.R.drawable.img_coach_1,
+                studentName = studentName,
+                date = date,
+                timeSlot = timeSlot,
+                price = price,
+                status = "Upcoming",
+                sessionNotes = sessionNotes,
+                feedbackReport = "",
+                feedbackGrade = ""
+            )
+            repository.createBooking(newBooking)
+        }
+    }
+
+    // --- Coach Profile Management ---
+    private val _coachBio = MutableStateFlow("Specialized cricket coach with 8+ years of coaching academy players. Focuses on advanced swing, stance weight transition, and backfoot drive techniques.")
+    val coachBio = _coachBio.asStateFlow()
+
+    private val _coachExperience = MutableStateFlow("8 Years")
+    val coachExperience = _coachExperience.asStateFlow()
+
+    private val _coachSkillsText = MutableStateFlow("Adv Batting, Backfoot Drive, Fast Bowling, Spin sweeps")
+    val coachSkillsText = _coachSkillsText.asStateFlow()
+
+    private val _coachCertificates = MutableStateFlow(listOf("ICC Level 2 Certified Coach", "BCCI Player Development Certificate", "National Academy High-Performance Trainer"))
+    val coachCertificates = _coachCertificates.asStateFlow()
+
+    private val _coachPhotos = MutableStateFlow(listOf("android.resource://com.example/" + com.example.R.drawable.img_coach_1, "android.resource://com.example/" + com.example.R.drawable.img_cricket_nets))
+    val coachPhotos = _coachPhotos.asStateFlow()
+
+    private val _coachVideos = MutableStateFlow(listOf("Cover Drive Alignment Drills - Video Link", "Bat Speed Acceleration Tips", "Backfoot Balance Stability"))
+    val coachVideos = _coachVideos.asStateFlow()
+
+    fun updateCoachBio(bio: String) {
+        _coachBio.value = bio
+    }
+
+    fun updateCoachExperience(exp: String) {
+        _coachExperience.value = exp
+    }
+
+    fun updateCoachSkillsText(skills: String) {
+        _coachSkillsText.value = skills
+    }
+
+    fun updateCoachProfileName(newName: String) {
+        viewModelScope.launch {
+            val current = userProfile.value
+            val updated = current.copy(name = newName)
+            repository.saveUserProfile(updated)
+        }
+    }
+
+    fun addCoachCertificate(cert: String) {
+        if (cert.isNotBlank()) {
+            _coachCertificates.value = _coachCertificates.value + cert
+        }
+    }
+
+    fun removeCoachCertificate(cert: String) {
+        _coachCertificates.value = _coachCertificates.value - cert
+    }
+
+    fun addCoachPhoto(url: String) {
+        if (url.isNotBlank()) {
+            _coachPhotos.value = _coachPhotos.value + url
+        }
+    }
+
+    fun removeCoachPhoto(url: String) {
+        _coachPhotos.value = _coachPhotos.value - url
+    }
+
+    fun addCoachVideo(title: String) {
+        if (title.isNotBlank()) {
+            _coachVideos.value = _coachVideos.value + title
+        }
+    }
+
+    fun removeCoachVideo(title: String) {
+        _coachVideos.value = _coachVideos.value - title
     }
 }
 
