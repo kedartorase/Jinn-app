@@ -22,6 +22,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.foundation.border
+import androidx.compose.foundation.Image
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import com.example.data.Coach
 import com.example.R
 import com.example.ui.viewmodel.CricketViewModel
@@ -279,23 +282,109 @@ fun DashboardScreen(
                             Toast.makeText(context, "Group Registration Successful! ₹500 reserved.", Toast.LENGTH_LONG).show()
                         }
                     ) {
-                        Text("Pay ₹500 & Register")
+                        Text("Pay ₹500 & Register", color = Color.White)
                     }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showGroupSessionToastAlert = false }) {
-                        Text("Dismiss")
+                    TextButton(
+                        onClick = { showGroupSessionToastAlert = false },
+                        colors = ButtonDefaults.textButtonColors(contentColor = SportColors.ActiveBlue)
+                    ) {
+                        Text("Dismiss", color = SportColors.ActiveBlue, fontWeight = FontWeight.Bold)
                     }
                 },
-                title = { Text("Group Session Booking") },
-                text = {
+                title = { 
                     Text(
-                        "Would you like to register for the 'Batting Techniques: Shot selection' workshop conducted by Coach Vikas SD? \nLocation: Vakola Santacruz East.\n Price: ₹500."
-                    )
+                        text = "Group Session Booking", 
+                        fontSize = 18.sp, 
+                        fontWeight = FontWeight.Bold,
+                        color = SportColors.TextPrimary
+                    ) 
+                },
+                text = {
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.img_group_banner),
+                            contentDescription = "Group Batting Session Logo",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(120.dp)
+                                .clip(RoundedCornerShape(12.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                        
+                        Spacer(modifier = Modifier.height(14.dp))
+                        
+                        Text(
+                            text = "Would you like to register for the 'Batting Techniques: Shot selection' workshop conducted by Coach Vikas SD?",
+                            color = SportColors.TextPrimary,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Place,
+                                contentDescription = null,
+                                tint = SportColors.ActiveBlue,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Vakola Santacruz East, Mumbai",
+                                color = SportColors.TextSecondary,
+                                fontSize = 11.sp
+                            )
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.CalendarToday,
+                                contentDescription = null,
+                                tint = SportColors.ActiveBlue,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Saturday, 05:00 PM - 07:00 PM",
+                                color = SportColors.TextSecondary,
+                                fontSize = 11.sp
+                            )
+                        }
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(vertical = 2.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Payment,
+                                contentDescription = null,
+                                tint = SportColors.ActiveBlue,
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Price: ₹500 (Full Session)",
+                                color = SportColors.TextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 },
                 containerColor = SportColors.SoftCardBg,
-                titleContentColor = Color.White,
-                textContentColor = Color.White.copy(alpha = 0.8f)
+                titleContentColor = SportColors.TextPrimary,
+                textContentColor = SportColors.TextSecondary
             )
         }
     }

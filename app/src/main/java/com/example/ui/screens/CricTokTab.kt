@@ -54,52 +54,41 @@ fun CricTokTab(viewModel: CricketViewModel) {
             .background(SportColors.DarkBackground)
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Title
-            Text(
-                text = "CricTok Shorts",
-                color = SportColors.TextPrimary,
-                fontSize = 24.sp,
-                fontWeight = FontWeight.Black,
-                modifier = Modifier.padding(horizontal = 24.dp)
-            )
-            Text(
-                text = "Swipe to learn: Elite coaching tips and demos in under 60s.",
-                color = SportColors.TextSecondary,
-                fontSize = 11.sp,
-                modifier = Modifier.padding(horizontal = 24.dp).padding(bottom = 12.dp)
-            )
-
-            // Category Selector Rows on Top
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 4.dp),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            // Stylized Sports Header with 22sp title (Page Title)
+            TabSportyHeader(
+                title = "CricTok Shorts",
+                subtitle = "Swipe to learn: Elite coaching tips and demos in under 60s.",
+                viewModel = viewModel,
+                showProfileRow = false
             ) {
-                listOf(null, "Batting", "Bowling", "Fielding").forEach { category ->
-                    val isSelected = activeCategory == category
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(16.dp))
-                            .background(
-                                if (isSelected) SportColors.ActiveBlue else SportColors.SoftCardBg
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    listOf(null, "Batting", "Bowling", "Fielding").forEach { category ->
+                        val isSelected = activeCategory == category
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(16.dp))
+                                .background(
+                                    if (isSelected) Color.White else Color.White.copy(alpha = 0.15f)
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    color = if (isSelected) Color.White else Color.White.copy(alpha = 0.3f),
+                                    shape = RoundedCornerShape(16.dp)
+                                )
+                                .clickable { activeCategory = category }
+                                .padding(horizontal = 14.dp, vertical = 6.dp)
+                        ) {
+                            Text(
+                                text = category ?: "All clips",
+                                color = if (isSelected) SportColors.ActiveBlue else Color.White,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
                             )
-                            .border(
-                                width = 1.dp,
-                                color = if (isSelected) Color.Transparent else SportColors.CardBorder,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .clickable { activeCategory = category }
-                            .padding(horizontal = 14.dp, vertical = 6.dp)
-                    ) {
-                        Text(
-                            text = category ?: "All clips",
-                            color = if (isSelected) Color.White else SportColors.TextPrimary,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        }
                     }
                 }
             }

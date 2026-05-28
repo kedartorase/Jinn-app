@@ -11,9 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.ui.screens.DashboardScreen
 import com.example.ui.screens.LoginScreen
+import com.example.ui.screens.CoachDashboardScreen
 import com.example.ui.screens.SportColors
 import com.example.ui.theme.MyApplicationTheme
 import com.example.ui.viewmodel.CricketViewModel
+import com.example.data.UserRole
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +29,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val viewModel: CricketViewModel = viewModel()
                     var isLoggedIn by remember { mutableStateOf(false) }
+                    val userProfile by viewModel.userProfile.collectAsState()
 
                     if (!isLoggedIn) {
                         LoginScreen(
@@ -34,13 +37,21 @@ class MainActivity : ComponentActivity() {
                             onLoginSuccess = { isLoggedIn = true }
                         )
                     } else {
-                        DashboardScreen(
-                            viewModel = viewModel,
-                            onLogout = { isLoggedIn = false }
-                        )
+                        if (userProfile.role == UserRole.COACH) {
+                            CoachDashboardScreen(
+                                viewModel = viewModel,
+                                onLogout = { isLoggedIn = false }
+                            )
+                        } else {
+                            DashboardScreen(
+                                viewModel = viewModel,
+                                onLogout = { isLoggedIn = false }
+                            )
+                        }
                     }
                 }
             }
         }
     }
 }
+

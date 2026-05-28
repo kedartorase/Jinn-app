@@ -172,8 +172,65 @@ class CricketRepository(context: Context) {
                         feedbackReport = "Excellent intent shown. Stance width was corrected. Work on bending your knees slightly to find a lower center of gravity while preparing for the swing. High backlift is good but needs better control.",
                         feedbackGrade = "B+"
                     )
+                    val booking3 = Booking(
+                        id = "book_sample_3",
+                        coachId = "coach_gautam",
+                        coachName = "Gautam Gambhir",
+                        coachSkills = "Opening Batsman | T20 Strategy",
+                        coachImageUrl = "android.resource://com.example/" + R.drawable.img_coach_1,
+                        studentName = "Aman Kumar",
+                        date = "2026-05-27",
+                        timeSlot = "09:30 AM - 11:30 AM",
+                        price = 1600.0,
+                        status = "Pending",
+                        sessionNotes = "I want to train on T20 batting pacing and hitting sixes."
+                    )
+                    val booking4 = Booking(
+                        id = "book_sample_4",
+                        coachId = "coach_gautam",
+                        coachName = "Gautam Gambhir",
+                        coachSkills = "Opening Batsman | T20 Strategy",
+                        coachImageUrl = "android.resource://com.example/" + R.drawable.img_coach_1,
+                        studentName = "Rahul Roy",
+                        date = "2026-05-25",
+                        timeSlot = "04:30 PM - 06:30 PM",
+                        price = 1600.0,
+                        status = "Completed",
+                        sessionNotes = "Learn spin batting sweep technique.",
+                        feedbackReport = "" // Empty feedback represents pending submission
+                    )
+                    val booking5 = Booking(
+                        id = "book_sample_5",
+                        coachId = "coach_rahul",
+                        coachName = "Rahul Dravid",
+                        coachSkills = "Defensive Mastery | Technique",
+                        coachImageUrl = "android.resource://com.example/" + R.drawable.img_coach_5,
+                        studentName = "Samson",
+                        date = "2026-05-28",
+                        timeSlot = "07:00 AM - 09:00 AM",
+                        price = 1800.0,
+                        status = "Pending",
+                        sessionNotes = "Work on standard defensive leaves."
+                    )
+                    val booking6 = Booking(
+                        id = "book_sample_6",
+                        coachId = "coach_rahul",
+                        coachName = "Rahul Dravid",
+                        coachSkills = "Defensive Mastery | Technique",
+                        coachImageUrl = "android.resource://com.example/" + R.drawable.img_coach_5,
+                        studentName = "Rohit Shinde",
+                        date = "2026-05-20",
+                        timeSlot = "09:30 AM - 11:30 AM",
+                        price = 1800.0,
+                        status = "Cancelled",
+                        sessionNotes = "Emergency scheduling issue."
+                    )
                     bookingDao.addBooking(booking1)
                     bookingDao.addBooking(booking2)
+                    bookingDao.addBooking(booking3)
+                    bookingDao.addBooking(booking4)
+                    bookingDao.addBooking(booking5)
+                    bookingDao.addBooking(booking6)
                 }
             }
         }
@@ -334,60 +391,81 @@ class CricketRepository(context: Context) {
     val storeProducts = listOf(
         CricProduct(
             id = "prod_1",
-            name = "Saurashtra Master Pro English Willow Bat",
+            name = "MRF Genius Grand Edition English Willow Bat",
             category = "Bat",
-            price = 4500.0,
-            originalPrice = 9000.0,
+            price = 14500.0,
+            originalPrice = 18000.0,
             rating = 4.8f,
-            reviewCount = 148,
-            desc = "Grade 1 English Willow cricket bat with customized short handle, sweet spot configured mid-to-low for subcontinental decks. Hand-picked for perfect balance.",
-            features = "Weight: 1180 grams | Edge: 40mm | Sweetspot: Low-mid | Grains: 8-10 straight grains",
-            isHot = true
+            reviewCount = 124,
+            desc = "Premium grade 1 English Willow cricket bat with excellent grains and thick edges. Handcrafted for superb balance, sweet spot, and heavy light pickup.",
+            features = "English Willow | Short handle | 9-11 Straight grains",
+            isHot = true,
+            imageUrl = "https://images.unsplash.com/photo-1540747737956-378724044492?auto=format&fit=crop&q=80&w=300"
         ),
         CricProduct(
             id = "prod_2",
-            name = "Nylon Seamer Hard Leather Cricket Ball (Box of 2)",
+            name = "Kookaburra Super Turf Leather Cricket Ball",
             category = "Ball",
-            price = 399.0,
-            originalPrice = 750.0,
-            rating = 4.4f,
-            reviewCount = 380,
-            desc = "Alum tanned premium quality four-piece leather balls. Highly pronounced seam perfect for out-swing training, net practice, and official club matches.",
-            features = "Weight: 156 grams | Grade A Leather | Waterproof outer lacquer | Wool wounded cork core"
+            price = 1200.0,
+            originalPrice = 1800.0,
+            rating = 4.7f,
+            reviewCount = 398,
+            desc = "Official 4-piece alum tanned steer hide leather ball. Selected wool/cork center with premium hand-stitched seam for reliable swing, grip, and trajectory.",
+            features = "Alum tanned | Waterproof | Shape retaining core",
+            isHot = true,
+            imageUrl = "https://images.unsplash.com/photo-1629285483773-6b5cde2171d1?auto=format&fit=crop&q=80&w=300"
         ),
         CricProduct(
             id = "prod_3",
-            name = "Pro-Elite High Density Foam Batting Pads",
-            category = "Pad",
-            price = 1499.0,
-            originalPrice = 2800.0,
-            rating = 4.6f,
-            reviewCount = 94,
-            desc = "Lightweight high-density plastazote foam facing with cane reinforcement. Molded knee bolster with mesh lining ensuring dry sweat absorption during high-energy innings.",
-            features = "Weight: 820g/pair | Gel insert knee zone | 3-band durable strap system",
-            isHot = true
+            name = "SG Savage Cricket Full Gear Kit Bag Pack",
+            category = "Kit",
+            price = 6800.0,
+            originalPrice = 9500.0,
+            rating = 4.5f,
+            reviewCount = 67,
+            desc = "Complete cricket kit containing Savage English Willow Bat, bat care scuff sheet, legguards, batting gloves, helmet, arm/thigh protection pads, and heavy nylon wheel bag.",
+            features = "Full set | Dual heavy-duty wheels | All-in-one bundle",
+            isHot = false,
+            imageUrl = "https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&q=80&w=300"
         ),
         CricProduct(
             id = "prod_4",
-            name = "Impact Combat Face-Wire ABS Helmet",
-            category = "Helmet",
-            price = 1999.0,
+            name = "SS Ranji Lite Weight Batting Legguard Pads",
+            category = "Pad",
+            price = 2400.0,
             originalPrice = 3500.0,
-            rating = 4.9f,
-            reviewCount = 67,
-            desc = "Premium high impact resistant ABS outer shell with a sweat absorption cushion liner. Adjusting size dialed head strap. Sleek powder-coated steel face grid.",
-            features = "Size: Adjustable Medium (54-58cm) | Air vents for cooling | Steel face protector"
+            rating = 4.4f,
+            reviewCount = 88,
+            desc = "Traditional cane construction padding with high-density sponge bolster protection. Contoured knee cups with broad calf straps for ultra-comfortable lightweight wear and fast mobility.",
+            features = "Cane front | High-density foam bolster | Ergonomic knee locator",
+            isHot = false,
+            imageUrl = "https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&q=80&w=300"
         ),
         CricProduct(
             id = "prod_5",
-            name = "Armor Grip Calfskin Batting Gloves",
+            name = "Shrey Master Class Air Titanium Cricket Helmet",
+            category = "Helmet",
+            price = 4550.0,
+            originalPrice = 5999.0,
+            rating = 4.9f,
+            reviewCount = 54,
+            desc = "Titanium high tensile steel grille with advanced dual density expandable EPS core. Perfect sweat-wicking inner padding with secure dynamic strap locks for max safety.",
+            features = "Titanium Grille | Advanced ventilations | BIS Safety Certified",
+            isHot = true,
+            imageUrl = "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&q=80&w=300"
+        ),
+        CricProduct(
+            id = "prod_6",
+            name = "DSC Intense Pro Leather Batting Gloves",
             category = "Gloves",
-            price = 699.0,
-            originalPrice = 1200.0,
-            rating = 4.5f,
-            reviewCount = 121,
-            desc = "Calf leather palm for exceptional comfort and touch grip. Dual-density finger rolls with fiber protection shields. Ergonomic side bar protection.",
-            features = "Right-Handed | Double sided sweat band | Calf skin premium durability"
+            price = 1350.0,
+            originalPrice = 1950.0,
+            rating = 4.6f,
+            reviewCount = 76,
+            desc = "Sheepskin leather palm for supreme feel, ventilation, and slip-free grip. Fiber inserts on first two fingers for advanced protection profile.",
+            features = "Premium sheepskin | High protection index | Elastic wrist band",
+            isHot = false,
+            imageUrl = "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&q=80&w=300"
         )
     )
 }

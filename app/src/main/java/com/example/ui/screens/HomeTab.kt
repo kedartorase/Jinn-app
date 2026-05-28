@@ -23,6 +23,7 @@ import coil.compose.AsyncImage
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.res.painterResource
@@ -30,6 +31,7 @@ import com.example.R
 import com.example.data.Coach
 import com.example.ui.viewmodel.AppMode
 import com.example.ui.viewmodel.CricketViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun HomeTab(
@@ -46,6 +48,10 @@ fun HomeTab(
     var showFilterSheet by remember { mutableStateOf(false) }
     var selectedNearbyService by remember { mutableStateOf<NearbyMoreService?>(null) }
 
+    val verticalScrollState = rememberScrollState()
+    val coroutineScope = rememberCoroutineScope()
+    val density = androidx.compose.ui.platform.LocalDensity.current
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -54,7 +60,7 @@ fun HomeTab(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(verticalScrollState)
                 .padding(bottom = 110.dp)
         ) {
             // Dark blue gradient sporty header block matching the reference screen
@@ -141,31 +147,14 @@ fun HomeTab(
 
                     Spacer(modifier = Modifier.height(26.dp))
 
-                    // Title: Pick skill whistle/coach matching image
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        Text(
-                            text = "Pick skill ",
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_whistle),
-                            contentDescription = "Whistle",
-                            modifier = Modifier.size(45.dp),
-                            contentScale = ContentScale.Fit
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Find coach",
-                            fontSize = 32.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
-                    }
+                    // Title: Learn Faster with the Right Coach (whistle removed as requested)
+                    Text(
+                        text = "Learn Faster with the Right Coach",
+                        fontSize = 26.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        lineHeight = 32.sp
+                    )
 
                     Spacer(modifier = Modifier.height(18.dp))
 
@@ -271,7 +260,13 @@ fun HomeTab(
                                             },
                                             shape = RoundedCornerShape(14.dp)
                                         )
-                                        .clickable { viewModel.selectSkillChip(skill) }
+                                        .clickable {
+                                            viewModel.selectSkillChip(skill)
+                                            coroutineScope.launch {
+                                                val targetPx = (410 * density.density).toInt()
+                                                verticalScrollState.animateScrollTo(targetPx)
+                                            }
+                                        }
                                         .padding(horizontal = 14.dp, vertical = 10.dp),
                                     contentAlignment = Alignment.Center
                                 ) {
@@ -432,7 +427,7 @@ fun HomeTab(
                                         ) {
                                             if (coach.imageUrl.isNotEmpty()) {
                                                 AsyncImage(
-                                                    model = coach.imageUrl,
+                                                    model = parseSportImageUrl(coach.imageUrl, androidx.compose.ui.platform.LocalContext.current),
                                                     contentDescription = coach.name,
                                                     contentScale = ContentScale.Crop,
                                                     modifier = Modifier.fillMaxSize()
@@ -556,124 +551,124 @@ fun HomeTab(
 
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    // "Find more near by" Section (Net Bowlers, Commentators, Umpires, Fitness Staff etc.)
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    // "Find more near by" Section (Net Bowlers, Commentators, Anchors, Umpires etc.)
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 12.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White),
+                        border = BorderStroke(1.dp, SportColors.CardBorder)
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Place,
-                                tint = SportColors.ActiveBlue,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Find more near by",
-                                color = SportColors.TextPrimary,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    LazyRow(
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        contentPadding = PaddingValues(horizontal = 2.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        items(nearbyMoreServices) { service ->
-                            val isSelected = selectedNearbyService?.id == service.id
-                            Card(
-                                modifier = Modifier
-                                    .width(132.dp)
-                                    .height(115.dp)
-                                    .clip(RoundedCornerShape(16.dp))
-                                    .clickable {
-                                        selectedNearbyService = if (isSelected) null else service
-                                    },
-                                shape = RoundedCornerShape(16.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = if (isSelected) SportColors.ActiveBlue.copy(alpha = 0.08f) else SportColors.SoftCardBg
-                                ),
-                                border = BorderStroke(
-                                    width = if (isSelected) 2.dp else 1.dp,
-                                    color = if (isSelected) SportColors.ActiveBlue.copy(alpha = 0.7f) else SportColors.CardBorder.copy(alpha = 0.5f)
-                                )
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp)
+                        ) {
+                            // Header Row inside Card
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(12.dp),
-                                    verticalArrangement = Arrangement.SpaceBetween
-                                ) {
-                                    Row(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalArrangement = Arrangement.SpaceBetween,
-                                        verticalAlignment = Alignment.Top
+                                Icon(
+                                    imageVector = Icons.Default.Place,
+                                    tint = SportColors.ActiveBlue,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text(
+                                    text = "Find more near by",
+                                    color = SportColors.TextPrimary,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                            // Grid row of circles using highly responsive LazyRow
+                            LazyRow(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                items(nearbyMoreServices) { service ->
+                                    val isSelected = selectedNearbyService?.id == service.id
+                                    Column(
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        modifier = Modifier
+                                            .clickable {
+                                                selectedNearbyService = if (isSelected) null else service
+                                            }
+                                            .width(100.dp)
+                                            .padding(vertical = 4.dp)
                                     ) {
-                                        // The main service icon using the shared colorful png images
+                                        // Circle Icon Container
                                         Box(
                                             modifier = Modifier
-                                                .size(38.dp)
+                                                .size(54.dp)
                                                 .clip(CircleShape)
-                                                .background(service.iconColor.copy(alpha = 0.12f)),
+                                                .background(
+                                                    if (isSelected) SportColors.ActiveBlue.copy(alpha = 0.15f)
+                                                    else service.iconColor.copy(alpha = 0.08f)
+                                                )
+                                                .border(
+                                                    width = if (isSelected) 2.dp else 1.dp,
+                                                    color = if (isSelected) SportColors.ActiveBlue else service.iconColor.copy(alpha = 0.3f),
+                                                    shape = CircleShape
+                                                ),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            Image(
-                                                painter = painterResource(id = service.iconResId),
+                                            val localIcon = when (service.id) {
+                                                "net_bowlers" -> Icons.Default.SportsCricket
+                                                "commentators" -> Icons.Default.Mic
+                                                "anchors" -> Icons.Default.Person
+                                                "umpires" -> Icons.Default.Shield
+                                                "groundsmen" -> Icons.Default.Build
+                                                else -> Icons.Default.Place
+                                            }
+                                            Icon(
+                                                imageVector = localIcon,
                                                 contentDescription = service.title,
-                                                modifier = Modifier.size(26.dp)
+                                                tint = if (isSelected) SportColors.ActiveBlue else service.iconColor,
+                                                modifier = Modifier.size(24.dp)
                                             )
                                         }
 
-                                        // Selection tick overlay
-                                        if (isSelected) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .background(Color(0xFF10B981), CircleShape)
-                                                    .size(18.dp),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Check,
-                                                    contentDescription = null,
-                                                    tint = Color.White,
-                                                    modifier = Modifier.size(10.dp)
-                                                )
-                                            }
-                                        }
-                                    }
+                                        Spacer(modifier = Modifier.height(8.dp))
 
-                                    Column {
+                                        // Title
                                         Text(
                                             text = service.title,
                                             color = SportColors.TextPrimary,
-                                            fontSize = 12.sp,
-                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 13.sp,
+                                            fontWeight = FontWeight.Medium,
+                                            textAlign = TextAlign.Center,
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
                                         )
+
                                         Spacer(modifier = Modifier.height(2.dp))
+
+                                        // Green dot + Count nearby
                                         Row(
-                                            verticalAlignment = Alignment.CenterVertically
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            horizontalArrangement = Arrangement.Center
                                         ) {
                                             Box(
                                                 modifier = Modifier
-                                                    .size(5.dp)
+                                                    .size(6.dp)
                                                     .clip(CircleShape)
                                                     .background(Color(0xFF10B981))
                                             )
                                             Spacer(modifier = Modifier.width(4.dp))
                                             Text(
                                                 text = "${service.countNearby} nearby",
-                                                color = SportColors.TextSecondary,
-                                                fontSize = 10.sp,
-                                                fontWeight = FontWeight.Medium
+                                                color = Color(0xFF10B981),
+                                                fontSize = 11.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                textAlign = TextAlign.Center
                                             )
                                         }
                                     }
@@ -694,8 +689,8 @@ fun HomeTab(
                                     .fillMaxWidth()
                                     .padding(vertical = 12.dp)
                                     .clip(RoundedCornerShape(16.dp))
-                                    .background(SportColors.ActiveBlue.copy(alpha = 0.04f))
-                                    .border(1.dp, SportColors.ActiveBlue.copy(alpha = 0.1f), RoundedCornerShape(16.dp))
+                                    .background(Color(0xFFEDF5FF))
+                                    .border(1.2.dp, SportColors.ActiveBlue.copy(alpha = 0.15f), RoundedCornerShape(16.dp))
                                     .padding(12.dp)
                             ) {
                                 Row(
@@ -1601,7 +1596,20 @@ val nearbyMoreServices = listOf(
         iconColor = Color(0xFF10B981),
         professionals = listOf(
             NearbyProfessional("Arjun Singh", "12 years exp", 4.9f, "₹150/session", "1.2 km away", "Right-Arm Medium Fast"),
-            NearbyProfessional("Vijay Kumar", "8 years exp", 4.7f, "₹120/session", "2.8 km away", "Left-Arm Orthodox Spin")
+            NearbyProfessional("Vijay Kumar", "8 years exp", 4.7f, "₹120/session", "2.8 km away", "Left-Arm Orthodox Spin"),
+            NearbyProfessional("Pritam Sen", "6 years exp", 4.6f, "₹100/session", "1.5 km away", "Right-Arm Leg Break"),
+            NearbyProfessional("Amit Mishra", "10 years exp", 4.8f, "₹160/session", "3.0 km away", "Right-Arm Off Spin"),
+            NearbyProfessional("Rahul Dravid", "14 years exp", 4.9f, "₹200/session", "4.1 km away", "Right-Arm Fast Medium"),
+            NearbyProfessional("Sameer Patil", "5 years exp", 4.4f, "₹90/session", "2.2 km away", "Left-Arm Fast Chinaman"),
+            NearbyProfessional("Kunal Deshmukh", "7 years exp", 4.5f, "₹110/session", "3.5 km away", "Right-Arm Off Break"),
+            NearbyProfessional("Rajat Sharma", "9 years exp", 4.7f, "₹130/session", "0.8 km away", "Right-Arm Medium Bowler"),
+            NearbyProfessional("Sunny Deol", "11 years exp", 4.8f, "₹180/session", "1.9 km away", "Left-Arm Medium Fast"),
+            NearbyProfessional("Vipul Goel", "4 years exp", 4.2f, "₹80/session", "4.5 km away", "Right-Arm Leg Spin"),
+            NearbyProfessional("Mohit Sharma", "8 years exp", 4.6f, "₹140/session", "2.4 km away", "Right-Arm Fast"),
+            NearbyProfessional("Devender Pal", "13 years exp", 4.9f, "₹190/session", "5.0 km away", "Left-Arm Fast Medium"),
+            NearbyProfessional("Siddharth Roy", "7 years exp", 4.5f, "₹115/session", "3.1 km away", "Right-Arm Off Spin"),
+            NearbyProfessional("Naveen ul-Haq", "5 years exp", 4.3f, "₹125/session", "2.7 km away", "Right-Arm Medium Pace"),
+            NearbyProfessional("Ishant Yadav", "9 years exp", 4.7f, "₹145/session", "1.4 km away", "Right-Arm Fast Seamer")
         )
     ),
     NearbyMoreService(
@@ -1613,7 +1621,13 @@ val nearbyMoreServices = listOf(
         iconColor = Color(0xFFF97316),
         professionals = listOf(
             NearbyProfessional("Sanjay Mehta", "15 years exp", 4.9f, "₹1500/match", "0.5 km away", "English & Hindi Commentary"),
-            NearbyProfessional("Rohan Joshi", "6 years exp", 4.5f, "₹800/match", "4.2 km away", "English & Marathi Expert")
+            NearbyProfessional("Rohan Joshi", "6 years exp", 4.5f, "₹800/match", "4.2 km away", "English & Marathi Expert"),
+            NearbyProfessional("Gaurav Kapoor", "11 years exp", 4.8f, "₹1800/match", "2.0 km away", "IPL Style English Host"),
+            NearbyProfessional("Harsha B.", "22 years exp", 5.0f, "₹3500/match", "1.1 km away", "Analysis & English Voice"),
+            NearbyProfessional("Aakash V.", "13 years exp", 4.7f, "₹2000/match", "3.4 km away", "Hindi Shayari & Analysis"),
+            NearbyProfessional("Jatin Sapru", "9 years exp", 4.6f, "₹1400/match", "2.9 km away", "Hindi & Punjabi Expert"),
+            NearbyProfessional("Mayanti Langer", "12 years exp", 4.9f, "₹2500/match", "1.8 km away", "Match Anchor & Comms"),
+            NearbyProfessional("Vikrant Gupta", "16 years exp", 4.4f, "₹1200/match", "5.0 km away", "Hindi Analysis & Comms")
         )
     ),
     NearbyMoreService(
@@ -1625,7 +1639,9 @@ val nearbyMoreServices = listOf(
         iconColor = Color(0xFF3B82F6),
         professionals = listOf(
             NearbyProfessional("Tina Sen", "9 years exp", 4.8f, "₹2000/event", "1.5 km away", "Live Presentation & Interview"),
-            NearbyProfessional("Dev Arya", "5 years exp", 4.6f, "₹1200/event", "3.0 km away", "Corporate & Match Emcee")
+            NearbyProfessional("Dev Arya", "5 years exp", 4.6f, "₹1200/event", "3.0 km away", "Corporate & Match Emcee"),
+            NearbyProfessional("Nehal Shah", "8 years exp", 4.7f, "₹1600/event", "2.1 km away", "Sports Gala & Live Stage"),
+            NearbyProfessional("Ankit Gera", "11 years exp", 4.9f, "₹2200/event", "4.0 km away", "Tournament Opening MC")
         )
     ),
     NearbyMoreService(
@@ -1637,7 +1653,17 @@ val nearbyMoreServices = listOf(
         iconColor = Color(0xFF1D4ED8),
         professionals = listOf(
             NearbyProfessional("K. Raghavan", "19 years exp", 4.9f, "₹1000/day", "2.0 km away", "BCCI Certified Level 2"),
-            NearbyProfessional("Pradeep Patil", "10 years exp", 4.7f, "₹600/day", "3.8 km away", "State Association Licensed")
+            NearbyProfessional("Pradeep Patil", "10 years exp", 4.7f, "₹600/day", "3.8 km away", "State Association Licensed"),
+            NearbyProfessional("Nitin Menon", "15 years exp", 5.0f, "₹1500/day", "1.2 km away", "ICC Elite Panel Umpire"),
+            NearbyProfessional("Anand Balke", "7 years exp", 4.5f, "₹500/day", "4.5 km away", "Corporate League Specialist"),
+            NearbyProfessional("Suresh Shastry", "18 years exp", 4.8f, "₹1100/day", "3.0 km away", "First-Class Panel Veteran"),
+            NearbyProfessional("Madan Mohan", "9 years exp", 4.6f, "₹550/day", "2.7 km away", "District Level Certified"),
+            NearbyProfessional("Ramesh Gowda", "11 years exp", 4.7f, "₹700/day", "3.5 km away", "State Senior Match Official"),
+            NearbyProfessional("Virender Sharma", "12 years exp", 4.7f, "₹900/day", "2.4 km away", "BCCI Panel Level 1"),
+            NearbyProfessional("Umesh Dubey", "6 years exp", 4.4f, "₹450/day", "5.1 km away", "Local T20 & Leather League"),
+            NearbyProfessional("Chettithody Shamshuddin", "14 years exp", 4.6f, "₹1200/day", "4.0 km away", "International Match Umpire"),
+            NearbyProfessional("Yeshwant Barde", "13 years exp", 4.8f, "₹1050/day", "1.9 km away", "First Class Certified"),
+            NearbyProfessional("K. N. Ananthapadmanabhan", "16 years exp", 4.9f, "₹1300/day", "2.9 km away", "BCCI Level 2 Elite List")
         )
     ),
     NearbyMoreService(
@@ -1649,7 +1675,11 @@ val nearbyMoreServices = listOf(
         iconColor = Color(0xFF047857),
         professionals = listOf(
             NearbyProfessional("Madan Lal", "20 years exp", 4.9f, "₹2500/day", "1.1 km away", "Pitch Curator & Soil Expert"),
-            NearbyProfessional("Somu Gowda", "11 years exp", 4.6f, "₹1200/day", "5.4 km away", "Outfield Maintenance Specialist")
+            NearbyProfessional("Somu Gowda", "11 years exp", 4.6f, "₹1200/day", "5.4 km away", "Outfield Maintenance Specialist"),
+            NearbyProfessional("Ramu Chaurasia", "15 years exp", 4.8f, "₹1800/day", "2.5 km away", "Clay Pitch & Turf Expert"),
+            NearbyProfessional("Subhash Singh", "8 years exp", 4.5f, "₹1000/day", "3.9 km away", "Matting, Pitch roller & Netting"),
+            NearbyProfessional("Dharma Naik", "13 years exp", 4.7f, "₹1500/day", "4.0 km away", "Damp Weather Drainage Pro"),
+            NearbyProfessional("Harnam Singh", "10 years exp", 4.6f, "₹1100/day", "1.7 km away", "State Stadium Turf Head")
         )
     ),
     NearbyMoreService(
@@ -1661,7 +1691,15 @@ val nearbyMoreServices = listOf(
         iconColor = Color(0xFF475569),
         professionals = listOf(
             NearbyProfessional("Nitin Desai", "7 years exp", 4.7f, "₹500/match", "2.5 km away", "Digital CricHero Specialist"),
-            NearbyProfessional("Ananya Rao", "4 years exp", 4.8f, "₹400/match", "1.9 km away", "Manual & Digital Stats Pro")
+            NearbyProfessional("Ananya Rao", "4 years exp", 4.8f, "₹400/match", "1.9 km away", "Manual & Digital Stats Pro"),
+            NearbyProfessional("Viketan Patil", "9 years exp", 4.8f, "₹650/match", "0.7 km away", "BCCI Level 1 Scorer"),
+            NearbyProfessional("Saurabh Ghadi", "6 years exp", 4.6f, "₹500/match", "3.6 km away", "Crex & CricHeroes Live"),
+            NearbyProfessional("Hrishikesh Joshi", "11 years exp", 4.9f, "₹800/match", "2.0 km away", "Advanced Match Analyst Pro"),
+            NearbyProfessional("Rajesh Sawant", "15 years exp", 4.9f, "₹1000/match", "1.5 km away", "Official Association Scorer"),
+            NearbyProfessional("Alok Dubey", "5 years exp", 4.4f, "₹400/match", "4.1 km away", "T10 & Corporate Scorer"),
+            NearbyProfessional("Shagufta Khan", "8 years exp", 4.7f, "₹600/match", "2.8 km away", "State Women's League Analyst"),
+            NearbyProfessional("Manoj Bajpai", "10 years exp", 4.8f, "₹750/match", "3.1 km away", "Vantage Points & Scorekeeping"),
+            NearbyProfessional("Kunal Kamath", "3 years exp", 4.3f, "₹350/match", "5.3 km away", "Local Leather Ball Recorder")
         )
     ),
     NearbyMoreService(
@@ -1673,7 +1711,19 @@ val nearbyMoreServices = listOf(
         iconColor = Color(0xFFEF4444),
         professionals = listOf(
             NearbyProfessional("Dr. Amit Roy", "13 years exp", 4.9f, "₹1000/hr", "2.1 km away", "Sports Physio & Rehab"),
-            NearbyProfessional("Coach Sunil", "9 years exp", 4.8f, "₹600/hr", "4.0 km away", "Strength & Conditioning Trainer")
+            NearbyProfessional("Coach Sunil", "9 years exp", 4.8f, "₹600/hr", "4.0 km away", "Strength & Conditioning Trainer"),
+            NearbyProfessional("Dr. Neha Sharma", "11 years exp", 4.9f, "₹1200/hr", "1.5 km away", "Cricket Injury Ortho Specialist"),
+            NearbyProfessional("Vikram Rathour", "7 years exp", 4.6f, "₹700/hr", "3.2 km away", "Agility, Core & Stamina Coach"),
+            NearbyProfessional("Srinivas Rao", "15 years exp", 4.9f, "₹1500/hr", "2.4 km away", "Cardio Fitness & Run Form Specialist"),
+            NearbyProfessional("Dr. Shailesh Kelkar", "12 years exp", 4.8f, "₹1100/hr", "4.5 km away", "Kinematics & Sports Rehab Physio"),
+            NearbyProfessional("Prashant Sawant", "10 years exp", 4.7f, "₹850/hr", "3.0 km away", "High Intensity Gym & Fitness Trainer"),
+            NearbyProfessional("Rita Sen", "8 years exp", 4.5f, "₹650/hr", "2.2 km away", "Yoga & Flexibility Coach"),
+            NearbyProfessional("Anuj Saxena", "6 years exp", 4.4f, "₹550/hr", "3.7 km away", "Dietician & Athletic Nutritionist"),
+            NearbyProfessional("Michael Arthur", "14 years exp", 4.9f, "₹1800/hr", "4.8 km away", "Speed, Plyometrics & Cricket Conditioning"),
+            NearbyProfessional("Rishabh Kohli", "5 years exp", 4.5f, "₹600/hr", "2.9 km away", "Body Endurance & Core Trainer"),
+            NearbyProfessional("Debashis Chowdhury", "16 years exp", 4.9f, "₹1400/hr", "1.8 km away", "Former National Academy Rehab Head"),
+            NearbyProfessional("Saurav Ganguly", "9 years exp", 4.6f, "₹800/hr", "3.5 km away", "Senior Sports Biomechanics Specialist"),
+            NearbyProfessional("Meera Nair", "7 years exp", 4.7f, "₹750/hr", "4.1 km away", "Cricket Post-Match Stretches Expert")
         )
     )
 )
@@ -1705,454 +1755,331 @@ fun DoorstepCoachingSection(
         }
     }
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(24.dp))
+    Column(
+        modifier = modifier.fillMaxWidth()
     ) {
-        // --- GLASSMORPHISM BACKDROP GLOW ORBS ---
-        // A vibrant green glow in the upper right
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .offset(x = 40.dp, y = (-20).dp)
-                .size(160.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF53F38D).copy(alpha = 0.45f),
-                            Color(0xFF53F38D).copy(alpha = 0.1f),
-                            Color.Transparent
-                        )
-                    ),
-                    shape = CircleShape
-                )
-        )
+        if (searchState == DoorstepSearchState.INITIAL) {
+            // "Coach at Your Doorstep?" heading as per attached design
+            Text(
+                text = "Coach at Your Doorstep?",
+                color = Color(0xFF132252), // Majestic navy blue
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold,
+                lineHeight = 32.sp
+            )
 
-        // A warm orange glow near the map area or bottom-left
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .offset(x = (-40).dp, y = 40.dp)
-                .size(180.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFFFB923C).copy(alpha = 0.4f),
-                            Color(0xFFFB923C).copy(alpha = 0.08f),
-                            Color.Transparent
-                        )
-                    ),
-                    shape = CircleShape
-                )
-        )
+            Spacer(modifier = Modifier.height(8.dp))
 
-        // Additional subtle indigo flare center-left to add richness
-        Box(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .offset(y = (-30).dp)
-                .size(120.dp)
-                .background(
-                    brush = Brush.radialGradient(
-                        colors = listOf(
-                            Color(0xFF3B82F6).copy(alpha = 0.35f),
-                            Color.Transparent
-                        )
-                    ),
-                    shape = CircleShape
-                )
-        )
+            Text(
+                text = "We offer mobile coaching sessions at your local nets. Check availability in your area.",
+                color = Color(0xFF64748B), // Clear grey body text
+                fontSize = 15.sp,
+                lineHeight = 22.sp
+            )
 
-        // --- GLASS CARD FRONT CONTAINER ---
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color(0xFF0F172A).copy(alpha = 0.55f), // Glass translucent slate 900
-                            Color(0xFF1E293B).copy(alpha = 0.45f)  // Glass translucent slate 800
-                        )
-                    )
-                )
-                .border(
-                    width = 1.dp,
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.White.copy(alpha = 0.22f), // Strong highlighted top edge
-                            Color.White.copy(alpha = 0.06f)  // Fading bottom edge
-                        )
-                    ),
-                    shape = RoundedCornerShape(24.dp)
-                )
-                .padding(24.dp)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxWidth()
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // Gray card layout in the design
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(136.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFBDC2D0))
             ) {
-                if (searchState == DoorstepSearchState.INITIAL) {
-                    Text(
-                        text = "Coach at Your Doorstep?",
-                        color = Color.White,
-                        fontSize = 25.sp,
-                        fontWeight = FontWeight.Bold,
-                        lineHeight = 32.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(10.dp))
-
-                    Text(
-                        text = "We offer mobile coaching sessions at your local nets. Check availability in your area.",
-                        color = Color.White.copy(alpha = 0.85f),
-                        fontSize = 14.sp,
-                        lineHeight = 21.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(20.dp))
-
-                    Button(
-                        onClick = { searchState = DoorstepSearchState.LOADING },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF53F38D),
-                            contentColor = Color(0xFF0F172A)
-                        ),
-                        shape = RoundedCornerShape(50),
-                        contentPadding = PaddingValues(horizontal = 24.dp, vertical = 12.dp),
-                        modifier = Modifier
-                            .height(48.dp)
-                            .border(1.dp, Color.White.copy(alpha = 0.3f), RoundedCornerShape(50))
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.LocationOn,
-                                contentDescription = null,
-                                tint = Color(0xFF0F172A),
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "Check My Area",
-                                color = Color(0xFF0F172A),
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
+                Row(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Left Side: Concentric circles with Orange Map Icon and decorative dots
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(220.dp),
+                            .width(160.dp)
+                            .fillMaxHeight(),
                         contentAlignment = Alignment.Center
                     ) {
+                        // Outer thin circular ring
                         Box(
                             modifier = Modifier
-                                .size(200.dp)
-                                .border(1.dp, Color.White.copy(alpha = 0.15f), CircleShape)
-                        )
-                        Box(
-                            modifier = Modifier
-                                .size(145.dp)
-                                .border(1.dp, Color.White.copy(alpha = 0.08f), CircleShape)
-                        )
-                        Box(
-                            modifier = Modifier
-                                .size(110.dp)
-                                .background(
-                                    Brush.radialGradient(
-                                        colors = listOf(
-                                            Color(0xFFFB923C),
-                                            Color(0xFFEA580C)
-                                        )
-                                    ),
-                                    CircleShape
+                                .size(96.dp)
+                                .border(
+                                    width = 1.2.dp,
+                                    color = Color.White.copy(alpha = 0.45f),
+                                    shape = CircleShape
                                 )
-                                .border(1.dp, Color.White.copy(alpha = 0.25f), CircleShape),
+                        )
+
+                        // Orange Map circle
+                        Box(
+                            modifier = Modifier
+                                .size(64.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFFA8F06)),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Map,
                                 contentDescription = null,
-                                tint = Color.White,
-                                modifier = Modifier.size(42.dp)
+                                tint = Color(0xFF4A2F08),
+                                modifier = Modifier.size(28.dp)
                             )
                         }
 
+                        // Top-right green dot intersecting style
                         Box(
                             modifier = Modifier
+                                .size(20.dp)
                                 .align(Alignment.Center)
-                                .offset(x = 65.dp, y = (-50).dp)
-                                .size(32.dp)
-                                .background(
-                                    Brush.radialGradient(
-                                        colors = listOf(
-                                            Color(0xFF53F38D),
-                                            Color(0xFF10B981)
-                                        )
-                                    ),
-                                    CircleShape
-                                )
-                                .border(1.dp, Color.White.copy(alpha = 0.4f), CircleShape)
+                                .offset(x = 34.dp, y = (-34).dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFF5DF58A))
                         )
 
+                        // Bottom-left light blue dot intersecting style
                         Box(
                             modifier = Modifier
+                                .size(16.dp)
                                 .align(Alignment.Center)
-                                .offset(x = (-70).dp, y = 60.dp)
-                                .size(24.dp)
-                                .background(
-                                    Brush.radialGradient(
-                                        colors = listOf(
-                                            Color(0xFF93C5FD),
-                                            Color(0xFF3B82F6)
-                                        )
-                                    ),
-                                    CircleShape
-                                )
-                                .border(1.dp, Color.White.copy(alpha = 0.3f), CircleShape)
+                                .offset(x = (-38).dp, y = 38.dp)
+                                .clip(CircleShape)
+                                .background(Color(0xFFB4C2FF))
                         )
                     }
 
-                } else if (searchState == DoorstepSearchState.LOADING) {
-                    Text(
-                        text = "Coach at Your Doorstep?",
-                        color = Color.White,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
+                    // Right Side: Indigo "Check My Area" button
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(180.dp),
+                            .padding(end = 24.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFF2D46CD))
+                            .clickable { searchState = DoorstepSearchState.LOADING }
+                            .padding(horizontal = 24.dp, vertical = 12.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(120.dp)
-                                .background(
-                                    Brush.radialGradient(
-                                        colors = listOf(
-                                            Color(0xFF53F38D).copy(alpha = 0.2f),
-                                            Color(0xFF53F38D).copy(alpha = 0.02f)
-                                        )
-                                    ),
-                                    CircleShape
-                                )
-                                .border(1.dp, Color.White.copy(alpha = 0.15f), CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator(
-                                color = Color(0xFF53F38D),
-                                modifier = Modifier.size(54.dp),
-                                strokeWidth = 3.dp
-                            )
-                        }
+                        Text(
+                            text = "Check My Area",
+                            color = Color.White,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
+                }
+            }
+        } else if (searchState == DoorstepSearchState.LOADING) {
+            Text(
+                text = "Coach at Your Doorstep?",
+                color = Color(0xFF132252),
+                fontSize = 25.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Beautiful clean loading card matching theme
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(180.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFFF1F5F9)),
+                border = BorderStroke(1.dp, Color(0xFFE2E8F0))
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    CircularProgressIndicator(
+                        color = Color(0xFF2D46CD),
+                        modifier = Modifier.size(44.dp),
+                        strokeWidth = 3.dp
+                    )
 
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Text(
                         text = progressText,
-                        color = Color.White,
+                        color = Color(0xFF1E293B),
                         fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                        fontWeight = FontWeight.Medium
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
                         text = "Checking professional radius...",
-                        color = Color.White.copy(alpha = 0.6f),
-                        fontSize = 12.sp,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
+                        color = Color(0xFF64748B),
+                        fontSize = 12.sp
                     )
+                }
+            }
+        } else {
+            // COMPLETED State
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Doorstep Coaches Near You",
+                    color = Color(0xFF132252),
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
 
-                } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                Text(
+                    text = "Reset",
+                    color = Color(0xFF2D46CD),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .clickable { searchState = DoorstepSearchState.INITIAL }
+                        .padding(8.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+
+            Text(
+                text = "These active professional mentors are verified to travel directly to your local nets in Mumbai:",
+                color = Color(0xFF64748B),
+                fontSize = 13.sp,
+                lineHeight = 18.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            val doorstepVerified = coaches.filter { 
+                it.id == "coach_helen" || it.id == "coach_mark" || it.id == "coach_gautam"
+            }.ifEmpty { coaches.take(2) }
+
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                doorstepVerified.forEach { coach ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onCoachClick(coach) },
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(16.dp),
+                        border = BorderStroke(1.dp, Color(0xFFE2E8F0))
                     ) {
-                        Text(
-                            text = "Doorstep Coaches Near You",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-
-                        Text(
-                            text = "Reset",
-                            color = Color(0xFF53F38D),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
+                        Row(
                             modifier = Modifier
-                                .clickable { searchState = DoorstepSearchState.INITIAL }
-                                .padding(4.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(6.dp))
-
-                    Text(
-                        text = "These active professional mentors are verified to travel directly to your local nets in Mumbai:",
-                        color = Color.White.copy(alpha = 0.7f),
-                        fontSize = 12.sp,
-                        lineHeight = 17.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    val doorstepVerified = coaches.filter { 
-                        it.id == "coach_helen" || it.id == "coach_mark" || it.id == "coach_gautam"
-                    }.ifEmpty { coaches.take(2) }
-
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        doorstepVerified.forEach { coach ->
-                            Card(
+                                .fillMaxWidth()
+                                .padding(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { onCoachClick(coach) }
-                                    .border(
-                                        width = 1.dp,
-                                        brush = Brush.verticalGradient(
-                                            colors = listOf(
-                                                Color.White.copy(alpha = 0.15f),
-                                                Color.White.copy(alpha = 0.03f)
-                                            )
-                                        ),
-                                        shape = RoundedCornerShape(16.dp)
-                                    ),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = Color(0xFF1E293B).copy(alpha = 0.5f) // Glass list item
-                                ),
-                                shape = RoundedCornerShape(16.dp)
+                                    .size(64.dp)
+                                    .clip(RoundedCornerShape(12.dp))
                             ) {
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
+                                if (coach.imageUrl.isNotEmpty()) {
+                                    AsyncImage(
+                                        model = parseSportImageUrl(coach.imageUrl, androidx.compose.ui.platform.LocalContext.current),
+                                        contentDescription = coach.name,
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                } else {
                                     Box(
                                         modifier = Modifier
-                                            .size(64.dp)
-                                            .clip(RoundedCornerShape(12.dp))
+                                            .fillMaxSize()
+                                            .background(Color(0xFFCBD5E1)),
+                                        contentAlignment = Alignment.Center
                                     ) {
-                                        if (coach.imageUrl.isNotEmpty()) {
-                                            AsyncImage(
-                                                model = coach.imageUrl,
-                                                contentDescription = coach.name,
-                                                contentScale = ContentScale.Crop,
-                                                modifier = Modifier.fillMaxSize()
-                                            )
-                                        } else {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxSize()
-                                                    .background(Color(0xFF334155)),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = coach.name.take(1),
-                                                    color = Color.White
-                                                )
-                                            }
-                                        }
-
-                                        Box(
-                                            modifier = Modifier
-                                                .align(Alignment.BottomEnd)
-                                                .background(
-                                                    Color(0xFF53F38D),
-                                                    RoundedCornerShape(topStart = 8.dp)
-                                                )
-                                                .padding(horizontal = 4.dp, vertical = 2.dp)
-                                        ) {
-                                            val distance = when (coach.id) {
-                                                "coach_helen" -> "0.9 km"
-                                                "coach_mark" -> "1.4 km"
-                                                "coach_gautam" -> "1.8 km"
-                                                else -> "1.2 km"
-                                            }
-                                            Text(
-                                                text = distance,
-                                                color = Color(0xFF0F172A),
-                                                fontSize = 8.sp,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
-                                    }
-
-                                    Spacer(modifier = Modifier.width(12.dp))
-
-                                    Column(modifier = Modifier.weight(1f)) {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(
-                                                text = coach.name,
-                                                color = Color.White,
-                                                fontSize = 14.sp,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                            Spacer(modifier = Modifier.width(4.dp))
-                                            
-                                            Icon(
-                                                imageVector = Icons.Default.CheckCircle,
-                                                tint = Color(0xFF53F38D),
-                                                contentDescription = "Doorstep Certified",
-                                                modifier = Modifier.size(12.dp)
-                                            )
-                                        }
-
-                                        Spacer(modifier = Modifier.height(2.dp))
-
                                         Text(
-                                            text = coach.skills,
-                                            color = Color.White.copy(alpha = 0.65f),
-                                            fontSize = 11.sp,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
+                                            text = coach.name.take(1),
+                                            color = Color(0xFF1E293B)
                                         )
-
-                                        Spacer(modifier = Modifier.height(4.dp))
-
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Default.Star,
-                                                tint = Color(0xFFFBBF24),
-                                                contentDescription = null,
-                                                modifier = Modifier.size(12.dp)
-                                            )
-                                            Spacer(modifier = Modifier.width(2.dp))
-                                            Text(
-                                                text = "${coach.rating} (${coach.reviewsCount})",
-                                                color = Color.White.copy(alpha = 0.8f),
-                                                fontSize = 10.sp
-                                            )
-                                            Spacer(modifier = Modifier.weight(1f))
-                                            Text(
-                                                text = "₹${coach.sessionPrice.toInt()}/hr",
-                                                color = Color(0xFFFDBA74),
-                                                fontSize = 12.sp,
-                                                fontWeight = FontWeight.Bold
-                                            )
-                                        }
                                     }
+                                }
+
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.BottomEnd)
+                                        .background(
+                                            Color(0xFFFFB800),
+                                            RoundedCornerShape(topStart = 8.dp)
+                                        )
+                                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                                ) {
+                                    val distance = when (coach.id) {
+                                        "coach_helen" -> "0.9 km"
+                                        "coach_mark" -> "1.4 km"
+                                        "coach_gautam" -> "1.8 km"
+                                        else -> "1.2 km"
+                                    }
+                                    Text(
+                                        text = distance,
+                                        color = Color(0xFF1F2937),
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = coach.name,
+                                        color = Color(0xFF1E293B),
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                    
+                                    Icon(
+                                        imageVector = Icons.Default.CheckCircle,
+                                        tint = Color(0xFF22C55E),
+                                        contentDescription = "Doorstep Certified",
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                }
+
+                                Spacer(modifier = Modifier.height(2.dp))
+
+                                Text(
+                                    text = coach.skills,
+                                    color = Color(0xFF64748B),
+                                    fontSize = 12.sp,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Star,
+                                        tint = Color(0xFFFBBF24),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(12.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                    Text(
+                                        text = "${coach.rating} (${coach.reviewsCount})",
+                                        color = Color(0xFF64748B),
+                                        fontSize = 11.sp
+                                    )
+                                    Spacer(modifier = Modifier.weight(1f))
+                                    Text(
+                                        text = "₹${coach.sessionPrice.toInt()}/hr",
+                                        color = Color(0xFF2D46CD),
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                             }
                         }

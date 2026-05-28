@@ -293,4 +293,125 @@ class CricketViewModel(application: Application) : AndroidViewModel(application)
     fun clearCart() {
         _cartItems.value = emptyMap()
     }
+
+    // --- Coach Module Dedicated States & Actions ---
+    private val _verifiedGrounds = MutableStateFlow<List<CricketGround>>(
+        listOf(
+            CricketGround("g_1", "Shivaji Park Turf", "android.resource://com.example/" + com.example.R.drawable.img_cricket_nets, "1.2 km away", 400.0, 4.8f),
+            CricketGround("g_2", "MCA Academy Ground", "android.resource://com.example/" + com.example.R.drawable.img_cricket_stadium, "2.8 km away", 750.0, 4.9f),
+            CricketGround("g_3", "Wankhede Practice Turf", "android.resource://com.example/" + com.example.R.drawable.img_scoreboard, "3.5 km away", 650.0, 4.7f),
+            CricketGround("g_4", "CCI Brabourne Nets", "android.resource://com.example/" + com.example.R.drawable.img_group_banner, "5.0 km away", 500.0, 4.6f)
+        )
+    )
+    val verifiedGrounds = _verifiedGrounds.asStateFlow()
+
+    private val _availableDates = MutableStateFlow<List<String>>(
+        listOf("2026-05-26", "2026-05-27", "2026-05-28", "2026-05-29", "2026-05-30", "2026-05-31")
+    )
+    val availableDates = _availableDates.asStateFlow()
+
+    private val _availableSlots = MutableStateFlow<List<String>>(
+        listOf("07:00 AM - 09:00 AM", "09:30 AM - 11:30 AM", "01:00 PM - 03:00 PM", "04:30 PM - 06:30 PM")
+    )
+    val availableSlots = _availableSlots.asStateFlow()
+
+    fun addGround(name: String, ratePerHour: Double, distance: String = "2.0 km away") {
+        val currentList = _verifiedGrounds.value.toMutableList()
+        val newId = "g_custom_" + System.currentTimeMillis()
+        val defaultImg = "android.resource://com.example/" + com.example.R.drawable.img_cricket_nets
+        val newGround = CricketGround(newId, name, defaultImg, distance, ratePerHour, 4.7f)
+        currentList.add(newGround)
+        _verifiedGrounds.value = currentList
+    }
+
+    fun removeGround(id: String) {
+        val currentList = _verifiedGrounds.value.toMutableList()
+        currentList.removeAll { it.id == id }
+        _verifiedGrounds.value = currentList
+    }
+
+    fun addAvailableDate(date: String) {
+        val current = _availableDates.value.toMutableList()
+        if (!current.contains(date)) {
+            current.add(date)
+            // Sort dates if possible
+            current.sort()
+            _availableDates.value = current
+        }
+    }
+
+    fun removeAvailableDate(date: String) {
+        val current = _availableDates.value.toMutableList()
+        current.remove(date)
+        _availableDates.value = current
+    }
+
+    fun addAvailableSlot(slot: String) {
+        val current = _availableSlots.value.toMutableList()
+        if (!current.contains(slot)) {
+            current.add(slot)
+            _availableSlots.value = current
+        }
+    }
+
+    fun removeAvailableSlot(slot: String) {
+        val current = _availableSlots.value.toMutableList()
+        current.remove(slot)
+        _availableSlots.value = current
+    }
+
+    fun acceptBookingRequest(id: String) {
+        viewModelScope.launch {
+            val bookingsList = repository.allBookings.first()
+            val match = bookingsList.find { it.id == id }
+            if (match != null) {
+                val updated = match.copy(status = "Upcoming")
+                repository.updateBooking(updated)
+            }
+        }
+    }
+
+    fun rejectBookingRequest(id: String) {
+        viewModelScope.launch {
+            val bookingsList = repository.allBookings.first()
+            val match = bookingsList.find { it.id == id }
+            if (match != null) {
+                // If rejected, mark as Cancelled which triggers refund initiation state
+                val updated = match.copy(status = "Cancelled")
+                repository.updateBooking(updated)
+            }
+        }
+    }
+
+    fun registerNewCoachProfile(name: String, skills: String, bio: String, rating: Float, reviewsCount: Int, sessionPrice: Double, location: String, availableDays: String) {
+        viewModelScope.launch {
+            val imageSeed = (1..7).random()
+            val defaultImgRes = when (imageSeed) {
+                1 -> com.example.R.drawable.img_coach_1
+                2 -> com.example.R.drawable.img_coach_2
+                3 -> com.example.R.drawable.img_coach_3
+                4 -> com.example.R.drawable.img_coach_4
+                5 -> com.example.R.drawable.img_coach_5
+                6 -> com.example.R.drawable.img_coach_6
+                else -> com.example.R.drawable.img_coach_7
+            }
+            val newCoach = Coach(
+                id = "coach_" + System.currentTimeMillis(),
+                name = name,
+                imageUrl = "android.resource://com.example/" + defaultImgRes,
+                skills = skills,
+                rating = rating,
+                reviewsCount = reviewsCount,
+                isVerified = true,
+                bio = bio,
+                experienceYears = 8,
+                certifications = "BCCI Certified Coach",
+                sessionPrice = sessionPrice,
+                location = location,
+                availableDays = availableDays
+            )
+            repository.coachDao.insertCoaches(listOf(newCoach))
+        }
+    }
 }
+

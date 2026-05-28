@@ -49,7 +49,8 @@ fun BookingsTab(viewModel: CricketViewModel) {
             TabSportyHeader(
                 title = "My Booking",
                 subtitle = "Track upcoming net practices, sessions, and training feedback logs.",
-                viewModel = viewModel
+                viewModel = viewModel,
+                showProfileRow = false
             )
 
             Column(
@@ -117,7 +118,7 @@ fun BookingsTab(viewModel: CricketViewModel) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     if (booking.coachImageUrl.isNotEmpty()) {
                                         AsyncImage(
-                                            model = booking.coachImageUrl,
+                                            model = parseSportImageUrl(booking.coachImageUrl, androidx.compose.ui.platform.LocalContext.current),
                                             contentDescription = booking.coachName,
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier
@@ -258,7 +259,7 @@ fun BookingsTab(viewModel: CricketViewModel) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     if (booking.coachImageUrl.isNotEmpty()) {
                                         AsyncImage(
-                                            model = booking.coachImageUrl,
+                                            model = parseSportImageUrl(booking.coachImageUrl, androidx.compose.ui.platform.LocalContext.current),
                                             contentDescription = booking.coachName,
                                             contentScale = ContentScale.Crop,
                                             modifier = Modifier

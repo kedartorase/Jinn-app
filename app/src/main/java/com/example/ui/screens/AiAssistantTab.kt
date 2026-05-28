@@ -54,43 +54,30 @@ fun AiAssistantTab(viewModel: CricketViewModel) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Module Title Header
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Stylized Sports Header with AI Assistant Mode
+            TabSportyHeader(
+                title = "AI Cricket Coach",
+                subtitle = "Smart athletic companion & match tactician.",
+                viewModel = viewModel,
+                showProfileRow = false
             ) {
-                Column {
-                    Text(
-                        text = "AI Cricket Coach",
-                        color = SportColors.TextPrimary,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Black
-                    )
-                    Text(
-                        text = "Smart athletic companion & match tactician.",
-                        color = SportColors.TextSecondary,
-                        fontSize = 11.sp
-                    )
-                }
-                
-                IconButton(
-                    onClick = { viewModel.clearChat() },
-                    modifier = Modifier.background(SportColors.CardBorder, CircleShape)
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Block,
-                        contentDescription = "Clear Chat",
-                        tint = SportColors.TextSecondary
-                    )
+                    IconButton(
+                        onClick = { viewModel.clearChat() },
+                        modifier = Modifier.background(Color.White.copy(alpha = 0.12f), CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Block,
+                            contentDescription = "Clear Chat",
+                            tint = Color.White
+                        )
+                    }
                 }
             }
-
-            Spacer(modifier = Modifier.height(12.dp))
 
             // Chat Messages Scroll Area
             LazyColumn(

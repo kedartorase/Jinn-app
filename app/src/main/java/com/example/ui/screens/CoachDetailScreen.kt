@@ -26,7 +26,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.Coach
+import com.example.data.CricketGround
 import com.example.ui.viewmodel.CricketViewModel
+import com.example.R
 
 @Composable
 fun CoachDetailScreen(
@@ -106,7 +108,7 @@ fun CoachDetailScreen(
                     Spacer(modifier = Modifier.height(40.dp))
                     if (coach.imageUrl.isNotEmpty()) {
                         AsyncImage(
-                            model = coach.imageUrl,
+                            model = parseSportImageUrl(coach.imageUrl, androidx.compose.ui.platform.LocalContext.current),
                             contentDescription = coach.name,
                             contentScale = ContentScale.Crop,
                             modifier = Modifier
@@ -368,7 +370,7 @@ fun CoachDetailScreen(
                                         .height(100.dp)
                                 ) {
                                     AsyncImage(
-                                        model = ground.imageUrl,
+                                        model = parseSportImageUrl(ground.imageUrl, androidx.compose.ui.platform.LocalContext.current),
                                         contentDescription = ground.name,
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier.fillMaxSize()
@@ -680,9 +682,12 @@ fun CoachDetailScreen(
                                         couponApplied = true
                                     }
                                 },
-                                colors = ButtonDefaults.buttonColors(containerColor = SportColors.ActiveBlue)
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = SportColors.ActiveBlue,
+                                    contentColor = Color.White
+                                )
                             ) {
-                                Text("Apply", fontSize = 11.sp)
+                                Text("Apply", color = Color.White, fontSize = 11.sp)
                             }
                         }
                         if (couponApplied) {
@@ -757,20 +762,11 @@ fun CoachDetailScreen(
     }
 }
 
-data class CricketGround(
-    val id: String,
-    val name: String,
-    val imageUrl: String,
-    val distance: String,
-    val ratePerHour: Double,
-    val rating: Float
-)
-
 val verifiedCricketGrounds = listOf(
     CricketGround(
         id = "ground_1",
         name = "Shivaji Park Turf",
-        imageUrl = "https://images.unsplash.com/photo-1540747737956-378724044492?auto=format&fit=crop&q=80&w=400",
+        imageUrl = "android.resource://com.example/" + R.drawable.img_cricket_nets,
         distance = "1.2 km away",
         ratePerHour = 400.0,
         rating = 4.8f
@@ -778,7 +774,7 @@ val verifiedCricketGrounds = listOf(
     CricketGround(
         id = "ground_2",
         name = "MCA Academy Ground",
-        imageUrl = "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=400",
+        imageUrl = "android.resource://com.example/" + R.drawable.img_cricket_stadium,
         distance = "2.8 km away",
         ratePerHour = 750.0,
         rating = 4.9f
@@ -786,7 +782,7 @@ val verifiedCricketGrounds = listOf(
     CricketGround(
         id = "ground_3",
         name = "Wankhede Practice Turf",
-        imageUrl = "https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?auto=format&fit=crop&q=80&w=400",
+        imageUrl = "android.resource://com.example/" + R.drawable.img_scoreboard,
         distance = "3.5 km away",
         ratePerHour = 650.0,
         rating = 4.7f
@@ -794,7 +790,7 @@ val verifiedCricketGrounds = listOf(
     CricketGround(
         id = "ground_4",
         name = "CCI Brabourne Nets",
-        imageUrl = "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&q=80&w=400",
+        imageUrl = "android.resource://com.example/" + R.drawable.img_group_banner,
         distance = "5.0 km away",
         ratePerHour = 500.0,
         rating = 4.6f

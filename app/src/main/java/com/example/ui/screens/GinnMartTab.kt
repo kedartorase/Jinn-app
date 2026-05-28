@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.data.CricProduct
 import com.example.ui.viewmodel.CricketViewModel
 
@@ -52,89 +53,83 @@ fun GinnMartTab(viewModel: CricketViewModel) {
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Header Area
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 24.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            // Stylized Sports Header with 22sp title typography (Page Title)
+            TabSportyHeader(
+                title = "JinnMart Sports Shop",
+                subtitle = "Premium cricket wear, bats, and protective guards.",
+                viewModel = viewModel,
+                showProfileRow = false
             ) {
-                Column {
-                    Text(
-                        text = "GinnMart Sports Shop",
-                        color = SportColors.TextPrimary,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Black
-                    )
-                    Text(
-                        text = "Premium cricket wear, bats, and protective guards.",
-                        color = SportColors.TextSecondary,
-                        fontSize = 11.sp
-                    )
-                }
-
-                // Floating Cart Indicator on Top
-                IconButton(
-                    onClick = { if (cartCount > 0) showCartDialog = true },
-                    modifier = Modifier
-                        .background(SportColors.SoftCardBg, CircleShape)
-                        .border(1.dp, SportColors.CardBorder, CircleShape)
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BadgedBox(
-                        badge = {
-                            if (cartCount > 0) {
-                                Badge(containerColor = SportColors.BrightOrange) {
-                                    Text(cartCount.toString(), color = Color.White)
-                                }
+                    // Category filters buttons inside the header
+                    val categories = listOf(null, "Bat", "Ball", "Kit", "Pad", "Helmet", "Gloves")
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        categories.forEach { cat ->
+                            val isSelected = selectedCategory == cat
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(14.dp))
+                                    .background(
+                                        if (isSelected) Color.White else Color.White.copy(alpha = 0.15f)
+                                    )
+                                    .border(
+                                        width = 1.dp,
+                                        color = if (isSelected) Color.White else Color.White.copy(alpha = 0.3f),
+                                        shape = RoundedCornerShape(14.dp)
+                                    )
+                                    .clickable { viewModel.selectCategory(cat) }
+                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                            ) {
+                                Text(
+                                    text = cat ?: "All Gears",
+                                    color = if (isSelected) SportColors.ActiveBlue else Color.White,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
                             }
                         }
-                    ) {
-                        Icon(Icons.Default.ShoppingCart, contentDescription = "Cart", tint = SportColors.TextPrimary)
                     }
-                }
-            }
 
-            Spacer(modifier = Modifier.height(14.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
 
-            // Category filters buttons
-            val categories = listOf(null, "Bat", "Ball", "Pad", "Helmet", "Gloves")
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp, vertical = 4.dp)
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                categories.forEach { cat ->
-                    val isSelected = selectedCategory == cat
-                    Box(
+                    // Floating Cart Indicator
+                    IconButton(
+                        onClick = { if (cartCount > 0) showCartDialog = true },
                         modifier = Modifier
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(
-                                if (isSelected) SportColors.ActiveBlue else SportColors.SoftCardBg
-                            )
-                            .border(
-                                width = 1.dp,
-                                color = if (isSelected) Color.Transparent else SportColors.CardBorder,
-                                shape = RoundedCornerShape(14.dp)
-                            )
-                            .clickable { viewModel.selectCategory(cat) }
-                            .padding(horizontal = 14.dp, vertical = 6.dp)
+                            .background(Color.White, CircleShape)
+                            .size(36.dp)
                     ) {
-                        Text(
-                            text = cat ?: "All Gears",
-                            color = if (isSelected) Color.White else SportColors.TextPrimary,
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold
-                        )
+                        BadgedBox(
+                            badge = {
+                                if (cartCount > 0) {
+                                    Badge(containerColor = SportColors.BrightOrange) {
+                                        Text(cartCount.toString(), color = Color.White, fontSize = 9.sp)
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ShoppingCart,
+                                contentDescription = "Cart",
+                                tint = SportColors.ActiveBlue,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(18.dp))
 
             // Products grid listing
             Column(
@@ -155,31 +150,27 @@ fun GinnMartTab(viewModel: CricketViewModel) {
                                 .padding(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            // Left product illustration box
+                            // Real product image using AsyncImage
                             Box(
                                 modifier = Modifier
                                     .size(80.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(
-                                        if (prod.category == "Bat") Color(0xFFFFE4C4) else Color(
-                                            0xFFFFCDD2
-                                        )
-                                    ),
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .background(Color.White.copy(alpha = 0.05f)),
                                 contentAlignment = Alignment.Center
                             ) {
-                                if (prod.category == "Bat") {
-                                    CustomCricketBatGraphic(
-                                        modifier = Modifier.size(54.dp),
-                                        woodColor = Color(0xFFC68B59),
-                                        gripColor = SportColors.ActiveBlue
+                                if (prod.imageUrl.isNotEmpty()) {
+                                    AsyncImage(
+                                        model = prod.imageUrl,
+                                        contentDescription = prod.name,
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = androidx.compose.ui.layout.ContentScale.Crop
                                     )
                                 } else {
-                                    // Leather Ball or Guard icons
                                     Icon(
-                                        imageVector = if (prod.category == "Ball") Icons.Default.SportsBaseball else Icons.Default.Shield,
+                                        imageVector = Icons.Default.ShoppingBag,
                                         contentDescription = null,
-                                        tint = if (prod.category == "Ball") Color.Red else SportColors.GoldYellow,
-                                        modifier = Modifier.size(36.dp)
+                                        tint = Color.White.copy(alpha = 0.5f),
+                                        modifier = Modifier.size(32.dp)
                                     )
                                 }
                             }
@@ -196,7 +187,7 @@ fun GinnMartTab(viewModel: CricketViewModel) {
                                 Text(
                                     text = prod.name,
                                     color = SportColors.TextPrimary,
-                                    fontSize = 13.sp,
+                                    fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
@@ -204,7 +195,7 @@ fun GinnMartTab(viewModel: CricketViewModel) {
                                 Text(
                                     text = prod.desc,
                                     color = SportColors.TextSecondary,
-                                    fontSize = 10.sp,
+                                    fontSize = 14.sp,
                                     maxLines = 2,
                                     overflow = TextOverflow.Ellipsis
                                 )
@@ -215,20 +206,22 @@ fun GinnMartTab(viewModel: CricketViewModel) {
                                     Text(
                                         text = "₹${prod.price.toInt()}",
                                         color = SportColors.ActiveBlue,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.Black
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.Bold
                                     )
                                     Spacer(modifier = Modifier.width(6.dp))
                                     Text(
                                         text = "₹${prod.originalPrice.toInt()}",
                                         color = SportColors.TextSecondary.copy(alpha = 0.6f),
-                                        fontSize = 11.sp,
+                                        fontSize = 14.sp,
                                         textDecoration = TextDecoration.LineThrough
                                     )
                                 }
                             }
 
-                            // Add to cart controls
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            // Add to cart controls (Button typography - 14sp, Medium weight)
                             val qty = cart.getOrDefault(prod.id, 0)
                             if (qty == 0) {
                                 Box(
@@ -236,9 +229,9 @@ fun GinnMartTab(viewModel: CricketViewModel) {
                                         .clip(RoundedCornerShape(16.dp))
                                         .background(SportColors.SportGreen)
                                         .clickable { viewModel.addToCart(prod.id) }
-                                    .padding(horizontal = 14.dp, vertical = 8.dp)
+                                        .padding(horizontal = 14.dp, vertical = 8.dp)
                                 ) {
-                                    Text("Add", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                    Text("Add", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                                 }
                             } else {
                                 Row(
@@ -247,29 +240,29 @@ fun GinnMartTab(viewModel: CricketViewModel) {
                                 ) {
                                     Box(
                                         modifier = Modifier
-                                            .size(24.dp)
+                                            .size(28.dp)
                                             .clip(CircleShape)
                                             .background(SportColors.CardBorder)
                                             .clickable { viewModel.removeFromCart(prod.id) },
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Text("-", color = SportColors.TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                                        Text("-", color = SportColors.TextPrimary, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                                     }
                                     Text(
                                         qty.toString(),
                                         color = SportColors.TextPrimary,
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.Bold
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.Medium
                                     )
                                     Box(
                                         modifier = Modifier
-                                            .size(24.dp)
+                                            .size(28.dp)
                                             .clip(CircleShape)
                                             .background(SportColors.SportGreen)
                                             .clickable { viewModel.addToCart(prod.id) },
                                         contentAlignment = Alignment.Center
                                     ) {
-                                        Text("+", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                        Text("+", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
                                     }
                                 }
                             }

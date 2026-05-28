@@ -105,5 +105,15 @@ data class CricProduct(
     val reviewCount: Int,
     val desc: String,
     val features: String,
-    val isHot: Boolean = false
+    val isHot: Boolean = false,
+    val imageUrl: String = ""
+)
+
+data class CricketGround(
+    val id: String,
+    val name: String,
+    val imageUrl: String,
+    val distance: String,
+    val ratePerHour: Double,
+    val rating: Float
 )

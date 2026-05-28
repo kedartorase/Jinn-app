@@ -34,6 +34,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+fun parseSportImageUrl(imageUrl: String, context: android.content.Context): Any {
+    if (imageUrl.startsWith("android.resource://com.example/")) {
+        return imageUrl.replace("com.example", context.packageName)
+    }
+    return imageUrl
+}
+
 // Reusable Sports Colors
 object SportColors {
     val DeepBlueHeader = Color(0xFF0A1E3C)
@@ -334,30 +341,18 @@ fun GradientButton(
             disabledContainerColor = Color.Transparent,
             disabledContentColor = Color.White.copy(alpha = 0.5f)
         ),
-        contentPadding = PaddingValues(),
+        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
         enabled = enabled,
         shape = shape,
         modifier = buttonModifier
+            .background(
+                brush = SportColors.PrimaryGradient,
+                shape = shape,
+                alpha = if (enabled) 1f else 0.5f
+            )
     ) {
-        val alpha = if (enabled) 1f else 0.5f
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = SportColors.PrimaryGradient,
-                    alpha = alpha
-                )
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                CompositionLocalProvider(LocalContentColor provides Color.White) {
-                    content()
-                }
-            }
+        CompositionLocalProvider(LocalContentColor provides Color.White) {
+            content()
         }
     }
 }
@@ -368,6 +363,7 @@ fun TabSportyHeader(
     subtitle: String,
     viewModel: CricketViewModel,
     modifier: Modifier = Modifier,
+    showProfileRow: Boolean = true,
     extraContent: @Composable ColumnScope.() -> Unit = {}
 ) {
     val userProfile by viewModel.userProfile.collectAsState()
@@ -388,83 +384,87 @@ fun TabSportyHeader(
                 .padding(horizontal = 20.dp)
                 .statusBarsPadding()
         ) {
-            Spacer(modifier = Modifier.height(12.dp))
+            if (showProfileRow) {
+                Spacer(modifier = Modifier.height(12.dp))
 
-            // Top Row: Avatar, Greeting, notification widget
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // User Avatar
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(SportColors.SoftCardBg),
-                    contentAlignment = Alignment.Center
+                // Top Row: Avatar, Greeting, notification widget
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "User Initials",
-                        tint = SportColors.GlowBlueAccent
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                // Greeting and Location
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Hello, ${userProfile.name}",
-                        color = Color.White,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { /* Simulate location select */ }
+                    // User Avatar
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .clip(CircleShape)
+                            .background(SportColors.SoftCardBg),
+                        contentAlignment = Alignment.Center
                     ) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "User Initials",
+                            tint = SportColors.GlowBlueAccent
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(12.dp))
+
+                    // Greeting and Location
+                    Column(modifier = Modifier.weight(1f)) {
                         Text(
-                            text = userProfile.location,
-                            color = Color.White.copy(alpha = 0.6f),
-                            fontSize = 11.sp
+                            text = "Hello, ${userProfile.name}",
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
                         )
-                        Spacer(modifier = Modifier.width(2.dp))
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowRight,
-                            contentDescription = "Change Location",
-                            tint = Color.White.copy(alpha = 0.6f),
-                            modifier = Modifier.size(12.dp)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable { /* Simulate location select */ }
+                        ) {
+                            Text(
+                                text = userProfile.location,
+                                color = Color.White.copy(alpha = 0.6f),
+                                fontSize = 11.sp
+                            )
+                            Spacer(modifier = Modifier.width(2.dp))
+                            Icon(
+                                imageVector = Icons.Default.KeyboardArrowRight,
+                                contentDescription = "Change Location",
+                                tint = Color.White.copy(alpha = 0.6f),
+                                modifier = Modifier.size(12.dp)
+                            )
+                        }
+                    }
+
+                    // Notification Icon
+                    IconButton(
+                        onClick = { /* Actions */ },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        BadgedBox(
+                            badge = { Badge { Text("1") } }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Notifications,
+                                contentDescription = "Notifications",
+                                tint = Color.White,
+                                modifier = Modifier.size(22.dp)
+                            )
+                        }
                     }
                 }
 
-                // Notification Icon
-                IconButton(
-                    onClick = { /* Actions */ },
-                    modifier = Modifier.size(36.dp)
-                ) {
-                    BadgedBox(
-                        badge = { Badge { Text("1") } }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notifications",
-                            tint = Color.White,
-                            modifier = Modifier.size(22.dp)
-                        )
-                    }
-                }
+                Spacer(modifier = Modifier.height(24.dp))
+            } else {
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Title
+            // Title (Page Title: 22sp as per guidelines)
             Text(
                 text = title,
                 color = Color.White,
-                fontSize = 32.sp,
-                fontWeight = FontWeight.Black
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold
             )
             
             if (subtitle.isNotEmpty()) {
