@@ -1025,7 +1025,7 @@ fun CoachDetailScreen(
                             onClick = {
                                 val notesText = if (selectedGround != null) {
                                     "Venue reserved: ${selectedGround?.name} (${selectedGround?.distance}). Price: ₹${selectedGround?.ratePerHour?.toInt()}/hr. " +
-                                            "Practice focus: ${viewModel.userProfile.value.preferredSkills}."
+                                             "Practice focus: ${viewModel.userProfile.value.preferredSkills}."
                                 } else {
                                     "Practice focus: ${viewModel.userProfile.value.preferredSkills}. Bring sports safety guards."
                                 }
@@ -1039,7 +1039,13 @@ fun CoachDetailScreen(
                             testTag = "submit_button",
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Pay and Reserve Instant 🛡️", fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                            Text(
+                                text = "Pay and Reserve Instant 🛡️",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(12.dp))

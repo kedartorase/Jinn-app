@@ -189,7 +189,8 @@ class CricketViewModel(application: Application) : AndroidViewModel(application)
                 timeSlot = timeSlot,
                 price = coach.sessionPrice,
                 status = "Upcoming",
-                sessionNotes = notes
+                sessionNotes = notes,
+                location = coach.location
             )
             repository.createBooking(newBooking)
         }

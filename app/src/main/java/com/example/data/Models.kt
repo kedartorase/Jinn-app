@@ -54,7 +54,8 @@ data class Booking(
     val status: String = "Upcoming", // Upcoming, Completed, Cancelled
     val sessionNotes: String = "",
     val feedbackReport: String = "",
-    val feedbackGrade: String = "" // e.g. A, B+
+    val feedbackGrade: String = "", // e.g. A, B+
+    val location: String = "Shivaji Park Ground, Mumbai"
 )
 
 data class PlayerMatch(

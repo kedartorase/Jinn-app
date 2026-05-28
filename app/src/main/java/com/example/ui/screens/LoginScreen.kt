@@ -329,7 +329,9 @@ fun LoginScreen(
                                 text = "Confirm Profile Setup 🏏",
                                 color = Color.White,
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 16.sp
+                                fontSize = 14.sp,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
                             )
                         }
                     }
@@ -406,7 +408,14 @@ fun LoginScreen(
                                 .height(46.dp),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Quick Mobile OTP Login 📱", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text(
+                                text = "Quick Mobile OTP Login 📱",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(15.dp))
@@ -470,7 +479,14 @@ fun LoginScreen(
                                 .height(48.dp),
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text("Verify Code & Start!", color = Color.White, fontWeight = FontWeight.Bold)
+                            Text(
+                                text = "Verify Code & Start!",
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 14.sp,
+                                maxLines = 1,
+                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(15.dp))

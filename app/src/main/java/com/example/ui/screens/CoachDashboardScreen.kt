@@ -33,6 +33,10 @@ import com.example.data.GroupSession
 import com.example.data.CricketGround
 import com.example.ui.viewmodel.CricketViewModel
 import kotlinx.coroutines.launch
+import android.content.Intent
+import android.net.Uri
+import android.provider.AlarmClock
+import android.provider.CalendarContract
 
 enum class CoachTab {
     DASHBOARD, BOOKINGS_MGR, AVAILABILITY, GROUNDS, PROFILE
@@ -934,8 +938,6 @@ fun CoachBookingsManager(
                 shape = RoundedCornerShape(8.dp),
                 contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
             ) {
-                Icon(Icons.Default.Add, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
-                Spacer(modifier = Modifier.width(4.dp))
                 Text("Log Walk-In", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }
             
@@ -1115,6 +1117,10 @@ fun CoachBookingsManager(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text("Ground / Venue:", color = Color(0xFFCBD5E1), fontSize = 12.sp, modifier = Modifier.weight(0.4f))
+                        Text(b.location, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 12.sp, textAlign = TextAlign.End, modifier = Modifier.weight(0.6f))
+                    }
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Student Athlete:", color = Color(0xFFCBD5E1), fontSize = 12.sp)
                         Text(b.studentName, fontWeight = FontWeight.Bold, color = Color.White, fontSize = 12.sp)
                     }
@@ -1133,6 +1139,67 @@ fun CoachBookingsManager(
                     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                         Text("Booking Status:", color = Color(0xFFCBD5E1), fontSize = 12.sp)
                         Text(b.status, fontWeight = FontWeight.Bold, color = if (b.status == "Upcoming") SportColors.SportGreen else SportColors.BrightOrange, fontSize = 12.sp)
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    val context = LocalContext.current
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                try {
+                                    val gUri = Uri.parse("geo:0,0?q=${Uri.encode(b.location)}")
+                                    val mapIntent = Intent(Intent.ACTION_VIEW, gUri)
+                                    context.startActivity(mapIntent)
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Maps app not found", Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            modifier = Modifier.weight(1f).height(38.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = SportColors.ActiveBlue),
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Navigate Map 🗺️", fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
+
+                        Button(
+                            onClick = {
+                                try {
+                                    val intent = Intent(Intent.ACTION_INSERT).apply {
+                                        data = CalendarContract.Events.CONTENT_URI
+                                        putExtra(CalendarContract.Events.TITLE, "Coaching with ${b.coachName}")
+                                        putExtra(CalendarContract.Events.EVENT_LOCATION, b.location)
+                                        putExtra(CalendarContract.Events.DESCRIPTION, "Coaching session for ${b.studentName}. Notes: ${b.sessionNotes}")
+                                        putExtra(CalendarContract.EXTRA_EVENT_ALL_DAY, true)
+                                    }
+                                    context.startActivity(intent)
+                                    Toast.makeText(context, "Opening calendar for reminder", Toast.LENGTH_SHORT).show()
+                                } catch (e: Exception) {
+                                    try {
+                                        val intent = Intent(AlarmClock.ACTION_SET_ALARM).apply {
+                                            putExtra(AlarmClock.EXTRA_MESSAGE, "Coaching session: ${b.coachName}")
+                                            putExtra(AlarmClock.EXTRA_SKIP_UI, false)
+                                            putExtra(AlarmClock.EXTRA_HOUR, 9)
+                                            putExtra(AlarmClock.EXTRA_MINUTES, 0)
+                                        }
+                                        context.startActivity(intent)
+                                        Toast.makeText(context, "Setting reminder alarm", Toast.LENGTH_SHORT).show()
+                                    } catch (e2: Exception) {
+                                        Toast.makeText(context, "Reminder option unavailable", Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            },
+                            modifier = Modifier.weight(1f).height(38.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF10B981)),
+                            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
+                            shape = RoundedCornerShape(8.dp)
+                        ) {
+                            Text("Set Reminder ⏰", fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
                     }
 
                     Spacer(modifier = Modifier.height(10.dp))
@@ -1365,7 +1432,7 @@ fun BookingItemCard(
                         Text(
                             text = booking.studentName,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White,
+                            color = SportColors.TextPrimary,
                             fontSize = 14.sp
                         )
                         Text(
@@ -1451,11 +1518,7 @@ fun BookingItemCard(
                     colors = ButtonDefaults.buttonColors(containerColor = SportColors.ActiveBlue),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(imageVector = Icons.Default.RateReview, contentDescription = null, tint = Color.White, modifier = Modifier.size(14.dp))
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text("Submit Evaluation Report Card", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                    }
+                    Text("Submit Evaluation Report Card", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
